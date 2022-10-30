@@ -1,5 +1,6 @@
 package com.cmxz.snakesmartmemo.bean;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.springframework.util.DigestUtils;
 
@@ -11,6 +12,7 @@ import com.cmxz.snakesmartmemo.bean.exceptions.PasswdTooWeakException;
 public class User implements Serializable {
 	public static final String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)(?![0-9a-zA-Z]+$)(?![0-9\\W]+$)(?![a-zA-Z\\W]+$)[0-9A-Za-z\\W]{6,18}$";
 	// 强密码校验正则表达式：必须同时具有字母、数字、特殊符号
+	@Serial
 	private static final long serialVersionUID = -5025988945599797167L;
 	private long userId = 0;
 	private String userName = "";
