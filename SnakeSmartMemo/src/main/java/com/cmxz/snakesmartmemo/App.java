@@ -10,6 +10,5 @@ public class App
     {
         System.out.println( "Hello World!" );
         //test
-        System.out.println("Hello S-SM");
     }
 }
