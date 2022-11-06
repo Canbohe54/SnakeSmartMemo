@@ -1,0 +1,11 @@
+/PermissionException.class
+/InvalidTimeException.class
+/FileNotFoundException.class
+/FileLoadException.class
+/DataSavingException.class
+/DataLoadException.class
+/RuntimeException.class
+/ShareException.class
+/SystemContactNotAllowedException.class
+/SystemCalendarNotAllowedException.class
+/UserNotFoundException.class
