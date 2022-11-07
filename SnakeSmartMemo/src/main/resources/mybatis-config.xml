@@ -22,24 +22,24 @@
 				<!--IP、端口、库、字符集-->
 				<!--需要注意的是&在XML中是有意义的，需要使用amp;进行转义-->
 				<property name="url" value="${url}" />
-				<!--用户名和密码-->
-				<property name="username" value="${username}" />
-				<property name="password" value="${password}" />
+				<!--用户名和密码--><!--需要后期修改-->
+				<!--property name="username" value="root" /-->
+				<!--property name="password" value="123456" /-->
 			</dataSource>
 		</environment>
 		<environment id="withDruid">
 			<!--采取JDBC方式对数据库事务进行commit/rollback-->
 			<transactionManager type="JDBC" />
 			<!--采用连接池方式管理数据库连接-->
-			<dataSource type="com.cmxz.snakesmartmemo.util.DruidDataSourceFactory">
+			<dataSource type="com.cmxz.snakesmartmemo.DruidDataSourceFactory">
 				<!--数据库驱动-->
 				<property name="driverClass" value="${driver}" />
 				<!--IP、端口、库、字符集-->
 				<!--需要注意的是&在XML中是有意义的，需要使用amp;进行转义-->
 				<property name="jdbcUrl" value="${url}" />
-				<!--用户名和密码-->
-				<property name="username" value="${username}" />
-				<property name="password" value="${password}" />
+				<!--用户名和密码--><!--需要后期修改-->
+				<!--property name="username" value="root" /-->
+				<!--property name="password" value="123456" /-->
 			</dataSource>
 		</environment>
 	</environments>
