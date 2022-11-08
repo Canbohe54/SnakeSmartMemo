@@ -1,4 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--XML申明，每一个XML文件都需要-->
 <!--MyBatis DTD文档约束-->
-<beans xmlns="http://www.springframework.org/schema/beans"></beans>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<properties resource="db.properties" />
+	
+	<settings>
+		<setting name="logImpl" value="LOG4J"/>
+	</settings>
+	<!--在MyBatis中可以配置多套环境，然后通过default来控制采用哪套环境，让配置变得灵活-->
+	<environments default="withDruid">
+		<!--配置测试环境，不同的环境不同的id名字-->
+		<environment id="dev">
+			<!--采取JDBC方式对数据库事务进行commit/rollback-->
+			<transactionManager type="JDBC" />
+			<!--采用连接池方式管理数据库连接-->
+			<dataSource type="POOLED">
+				<!--数据库驱动-->
+				<property name="driver" value="${driver}" />
+				<!--IP、端口、库、字符集-->
+				<!--需要注意的是&在XML中是有意义的，需要使用amp;进行转义-->
+				<property name="url" value="${url}" />
+				<!--用户名和密码--><!--需要后期修改-->
+				<!--property name="username" value="root" /-->
+				<!--property name="password" value="123456" /-->
+			</dataSource>
+		</environment>
+		<environment id="withDruid">
+			<!--采取JDBC方式对数据库事务进行commit/rollback-->
+			<transactionManager type="JDBC" />
+			<!--采用连接池方式管理数据库连接-->
+			<dataSource type="com.cmxz.snakesmartmemo.DruidDataSourceFactory">
+				<!--数据库驱动-->
+				<property name="driverClass" value="${driver}" />
+				<!--IP、端口、库、字符集-->
+				<!--需要注意的是&在XML中是有意义的，需要使用amp;进行转义-->
+				<property name="jdbcUrl" value="${url}" />
+				<!--用户名和密码--><!--需要后期修改-->
+				<!--property name="username" value="root" /-->
+				<!--property name="password" value="123456" /-->
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="LunarDayMapper.xml" />
+	</mappers>
+</configuration>
 
