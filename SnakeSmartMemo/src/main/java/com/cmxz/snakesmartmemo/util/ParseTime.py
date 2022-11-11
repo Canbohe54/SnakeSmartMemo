@@ -52,6 +52,7 @@ def time_high_light(matched_time_object, start_flag='<', end_flag='>'):
 
 
 def time_is_legal(t_string):
+    # not complete yet
     if t_string == ' ' or t_string.isnumeric() or isfloat(t_string):
         return False
     return True
