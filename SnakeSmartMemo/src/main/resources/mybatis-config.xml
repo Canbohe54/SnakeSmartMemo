@@ -4,13 +4,21 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
+	<!--记得按顺序写，不然报错
+	The content of element type "configuration" must match
+	"(properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?,plugins?,environments?,mappers?)".-->
 	<properties resource="db.properties" />
-	
+
 	<settings>
 		<setting name="logImpl" value="LOG4J"/>
 	</settings>
+
+	<typeAliases>
+		<typeAlias type="com.cmxz.snakesmartmemo.pojo.User" alias="user"/>
+		<typeAlias type="com.cmxz.snakesmartmemo.pojo.Password" alias="Password"/>
+	</typeAliases>
 	<!--在MyBatis中可以配置多套环境，然后通过default来控制采用哪套环境，让配置变得灵活-->
-	<environments default="withDruid">
+	<environments default="dev">
 		<!--配置测试环境，不同的环境不同的id名字-->
 		<environment id="dev">
 			<!--采取JDBC方式对数据库事务进行commit/rollback-->
@@ -25,6 +33,8 @@
 				<!--用户名和密码--><!--需要后期修改-->
 				<!--property name="username" value="root" /-->
 				<!--property name="password" value="123456" /-->
+				<property name="username" value="${username}"/>
+				<property name="password" value="${password}"/>
 			</dataSource>
 		</environment>
 		<environment id="withDruid">
@@ -40,11 +50,14 @@
 				<!--用户名和密码--><!--需要后期修改-->
 				<!--property name="username" value="root" /-->
 				<!--property name="password" value="123456" /-->
+				<property name="username" value="${username}"/>
+				<property name="password" value="${password}"/>
 			</dataSource>
 		</environment>
 	</environments>
 	<mappers>
-		<mapper resource="LunarDayMapper.xml" />
+		<mapper resource="Mappers/UserMapper.xml" />
+		<mapper resource="Mappers/IdAndPasswordMapper.xml" />
 	</mappers>
 </configuration>
 
