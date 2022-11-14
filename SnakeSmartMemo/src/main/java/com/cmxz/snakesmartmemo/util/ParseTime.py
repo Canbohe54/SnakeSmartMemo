@@ -42,9 +42,7 @@ def time_high_light(matched_time_object, start_flag='<', end_flag='>'):
     :type end_flag: str
     :return: a precessed string contains flags
     """
-    # print(matched_time_object, end=':')
     matched_time_string = matched_time_object.group().rstrip(' ')
-    # print(matched_time_string == '', end=';\n')
     if matched_time_string != '' and time_is_legal(matched_time_string):
         return start_flag + matched_time_string + end_flag + (len(matched_time_object.group()) - len(matched_time_string)) * ' '
     else:
