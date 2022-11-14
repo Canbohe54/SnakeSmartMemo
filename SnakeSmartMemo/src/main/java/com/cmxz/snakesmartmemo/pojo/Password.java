@@ -1,6 +1,11 @@
 package com.cmxz.snakesmartmemo.pojo;
 
-public class Password {
+import lombok.Data;
+
+import java.io.Serializable;
+
+@Data
+public class Password implements Serializable {
     private String id;
     private String password;
     private String token;
