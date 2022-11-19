@@ -3,7 +3,7 @@ package com.cmxz.snakesmartmemo.bean.exceptions;
 public abstract class PasswdException extends Exception {
 
 	public PasswdException() {
-		super("Password Exception");
+		super("IdAndPassword Exception");
 	}
 
 	public PasswdException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
@@ -19,7 +19,7 @@ public abstract class PasswdException extends Exception {
 	}
 
 	public PasswdException(Throwable cause) {
-		super("Password Exception");
+		super("IdAndPassword Exception");
 	}
 	//禁用其他方法，防止抛出用户密码
 }

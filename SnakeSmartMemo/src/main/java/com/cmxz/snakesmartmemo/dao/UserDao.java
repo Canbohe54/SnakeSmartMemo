@@ -1,22 +1,32 @@
 package com.cmxz.snakesmartmemo.dao;
 
 import com.cmxz.snakesmartmemo.pojo.User;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+@Repository
 @Mapper
 public interface UserDao {
+    /**
+     * 获取所有用户信息
+     * @return 所有用户信息列表
+     */
     public List<User> getUserInfoList();
     @Select("select * from ssm.user_info where id = #{id} and username = #{username}")
     User getUserInfo(User user);
+
     /**
      * 插入方法
-     * @param user 封装有学生信息的Student对象(数据库自增id
-     * @return 受影响的行数
+     * @param user 封装有用户信息的User对象
+     *
      */
-    void insert(User user);
+    @Insert("insert into user_info(id,username) values(#{user.id},#{user.username})")
+    void insert(@Param("user") User user);
     int delete(User user);
     int update(User user);
 

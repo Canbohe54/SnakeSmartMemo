@@ -5,12 +5,12 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class Password implements Serializable {
+public class IdAndPassword implements Serializable {
     private String id;
     private String password;
     private String token;
 
-    public Password(String id, String password, String token) {
+    public IdAndPassword(String id, String password, String token) {
         this.id = id;
         this.password = password;
         this.token = token;
@@ -42,7 +42,7 @@ public class Password implements Serializable {
 
     @Override
     public String toString() {
-        return "Password{" +
+        return "IdAndPassword{" +
                 "id='" + id + '\'' +
                 ", password='" + password + '\'' +
                 ", token='" + token + '\'' +
