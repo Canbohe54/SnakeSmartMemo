@@ -8,4 +8,8 @@
         <!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 -->
         select * from ssm.user_info
     </select>
+    <select id="insert" parameterType="com.cmxz.snakesmartmemo.pojo.User">
+        <!-- 这里sql结尾不能加分号，否则报“ORA-00911”的错误 -->
+        insert into ssm.user_info(id,username) values(#{id},#{username})
+    </select>
 </mapper>

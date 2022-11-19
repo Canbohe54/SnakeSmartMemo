@@ -25,6 +25,7 @@ public class MybatisUtilsTest extends TestCase {
 
         sqlSession.close();
     }
+
     @Test
     public void testIdAndPasswordList() {
         SqlSession sqlSession = MybatisUtils.getSqlSession();
