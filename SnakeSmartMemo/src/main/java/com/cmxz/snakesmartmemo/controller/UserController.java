@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/users")
 public class UserController {
+    @Autowired
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -17,7 +18,7 @@ public class UserController {
     @RequestMapping(value = "register",method = RequestMethod.POST)
     @ResponseBody
     public String register(@RequestParam("id") String id,@RequestParam("user_name") String userName,@RequestParam("password") String password){
-        String msg= "";
+        String msg= userService.register(id, userName, password);
         return msg;
     }
     @RequestMapping(value = "login",method = RequestMethod.GET)
