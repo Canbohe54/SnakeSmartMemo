@@ -2,7 +2,7 @@ package com.cmxz.snakesmartmemo.util;
 
 import com.cmxz.snakesmartmemo.dao.IdAndPasswordDao;
 import com.cmxz.snakesmartmemo.dao.UserDao;
-import com.cmxz.snakesmartmemo.pojo.Password;
+import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
 import com.cmxz.snakesmartmemo.pojo.User;
 
 import junit.framework.TestCase;
@@ -31,9 +31,9 @@ public class MybatisUtilsTest extends TestCase {
         SqlSession sqlSession = MybatisUtils.getSqlSession();
 
         IdAndPasswordDao idAndPwdDao = sqlSession.getMapper(IdAndPasswordDao.class);
-        List<Password> idAndPwdList = idAndPwdDao.getIdAndPasswordList();
+        List<IdAndPassword> idAndPwdList = idAndPwdDao.getIdAndPasswordList();
 
-        for (Password idAndPwd : idAndPwdList) {
+        for (IdAndPassword idAndPwd : idAndPwdList) {
             System.out.println(idAndPwd);
         }
 

@@ -15,7 +15,7 @@
 
 	<typeAliases>
 		<typeAlias type="com.cmxz.snakesmartmemo.pojo.User" alias="user"/>
-		<typeAlias type="com.cmxz.snakesmartmemo.pojo.Password" alias="Password"/>
+		<typeAlias type="com.cmxz.snakesmartmemo.pojo.IdAndPassword" alias="Password"/>
 	</typeAliases>
 	<!--在MyBatis中可以配置多套环境，然后通过default来控制采用哪套环境，让配置变得灵活-->
 	<environments default="dev">
