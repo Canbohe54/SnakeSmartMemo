@@ -27,7 +27,7 @@ public class UserController {
         return back;
     }
 
-    @RequestMapping(value = "login",method = RequestMethod.GET)
+    @RequestMapping(value = "login",method = RequestMethod.POST)
     public Map<String,Object> login(@RequestParam("id")String id, @RequestParam("password")String password){
         Map<String,Object> resp = userService.login(id,password);
         return resp;

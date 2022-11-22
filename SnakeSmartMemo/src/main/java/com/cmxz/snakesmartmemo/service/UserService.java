@@ -40,7 +40,7 @@ class UserServerImpl implements UserService {
     public String register(String id,String userName,String password){
         //新建User对象，并查找是否已存在
         User newUser= new User(userName,id);
-        User uExist = userDao.getUserInfo(newUser);
+        User uExist = userDao.getUserInfoById(id);
 
         IdAndPassword newIdAndPassword = new IdAndPassword(id,password,null);
 //        IdAndPassword ipExist = idAndPasswordDao.getByIdAndPwd(newIdAndPassword);
