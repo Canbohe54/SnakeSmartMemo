@@ -1,5 +1,6 @@
 package com.cmxz.snakesmartmemo.service;
 
+import com.cmxz.snakesmartmemo.bean.exceptions.UserNotFoundException;
 import com.cmxz.snakesmartmemo.dao.IdAndPasswordDao;
 import com.cmxz.snakesmartmemo.dao.UserDao;
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
@@ -7,11 +8,15 @@ import com.cmxz.snakesmartmemo.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public interface  UserService {
      String echo(String id);
      String register(String id,String userName,String password);
-     String login(String id,String password);
+     Map<String,Object> login(String id,String password);
 
 }
 @Service
@@ -49,7 +54,22 @@ class UserServerImpl implements UserService {
         return "register successfully";
     }
 
-    public String login(String id,String password){
-        return "";
+    public Map<String,Object> login(String id, String password){
+        Map<String,Object> response = new HashMap<>();
+
+
+        try {
+            User exist = userDao.getUserInfoById(id);
+            if(exist==null){
+                throw new UserNotFoundException();
+            }
+            response.put("statusMsg","success");
+            response.put("userInfo",exist);
+            return response;
+        }catch (UserNotFoundException e){
+            response.put("statusMsg","UserNotFoundException");
+            response.put("userInfo","");
+            return response;
+        }
     }
 }

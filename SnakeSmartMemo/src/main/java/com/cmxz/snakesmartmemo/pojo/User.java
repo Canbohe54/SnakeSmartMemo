@@ -1,10 +1,10 @@
 package com.cmxz.snakesmartmemo.pojo;
 
-import lombok.Data;
+//import lombok.Data;
 
 import java.io.Serializable;
 
-@Data
+//@Data
 public class User implements Serializable {
     private String username;
     private String id;

@@ -1,3 +1,4 @@
 /.classpath
 /.project
 db.properties
+/src/main/resources/application.yml
