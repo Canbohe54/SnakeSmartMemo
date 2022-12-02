@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -37,5 +38,13 @@ public interface IdAndPasswordDao {
      */
     @Select("select * from ssm.id_and_passwords where id=#{id} and password = #{password}")
     IdAndPassword getByIdAndPwd(IdAndPassword user);
+
+    /**
+     * 该方法主要用于检测token是否到期，此处token由于时间关系，仅进行简单模拟
+     * @param id
+     * @return
+     */
+    @Select("select * from id_and_passwords where id=#{id}")
+    IdAndPassword getById(String id);
 }
 
