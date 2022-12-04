@@ -29,7 +29,6 @@
             targetPackage     指定生成的model生成所在的包名
             targetProject     指定在该项目下所在的路径
         -->
-		<!--<javaModelGenerator targetPackage="com.mmall.pojo" targetProject=".srcmainjava">-->
 		<javaModelGenerator targetPackage="com.cmxz.snakesmartmemo.pojo" targetProject="./src/main/java">
 			<!-- 是否允许子包，即targetPackage.schemaName.tableName -->
 			<property name="enableSubPackages" value="false" />
@@ -42,8 +41,6 @@
 		</javaModelGenerator>
 
 		<!--mapper映射文件生成所在的目录 为每一个数据库的表生成对应的SqlMap文件 -->
-		<!--<sqlMapGenerator targetPackage="mappers" targetProject=".srcmain
-esources">-->
 		<sqlMapGenerator targetPackage="Mappers" targetProject="./src/main/resources">
 			<property name="enableSubPackages" value="false" />
 		</sqlMapGenerator>
