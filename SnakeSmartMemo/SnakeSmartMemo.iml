@@ -17,6 +17,9 @@
         </fileset>
       </configuration>
     </facet>
+    <facet type="Python" name="Python">
+      <configuration sdkName="Python 3.9 (SnakeSmartMemo)" />
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
     <output url="file://$MODULE_DIR$/target/classes" />
@@ -100,5 +103,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okhttp3:okhttp:3.14.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okio:okio:1.17.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" name="Python 3.9 (SnakeSmartMemo) interpreter library" level="application" />
   </component>
 </module>
