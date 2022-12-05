@@ -6,6 +6,8 @@ import json
 import time
 from datetime import datetime
 
+from src.main.resources import tk
+
 
 def get_authorization(params):
     """
@@ -14,8 +16,8 @@ def get_authorization(params):
     :type params: dict
     :return: an authorization string
     """
-    secret_id = "******"
-    secret_key = "******"
+    secret_id = tk.secret_id
+    secret_key = tk.secret_key
     service = "asr"
     host = "asr.tencentcloudapi.com"
     algorithm = "TC3-HMAC-SHA256"
