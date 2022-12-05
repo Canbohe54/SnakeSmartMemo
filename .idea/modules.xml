@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../Python/Python.iml" filepath="$PROJECT_DIR$/../Python/Python.iml" />
       <module fileurl="file://$PROJECT_DIR$/SnakeSmartMemo/SnakeSmartMemo.iml" filepath="$PROJECT_DIR$/SnakeSmartMemo/SnakeSmartMemo.iml" />
     </modules>
   </component>
