@@ -144,7 +144,8 @@ class UserServerImpl implements UserService {
     }
 
     /**
-     * 获取对应文件的下载链接，不检查是否存在，该函数用于链接分享功能
+     * 文件共享，
+     * 先检查云端是否存在改文件，若存在返回访问链接
      *
      * @param id       用于构建url和查询服务器token
      * @param token    token用于检测登录是否到期
