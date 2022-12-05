@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String register(@RequestParam("id") String id, @RequestParam("user_name") String userName, @RequestParam("password") String password) {
+    public Map<String, Object> register(@RequestParam("id") String id, @RequestParam("user_name") String userName, @RequestParam("password") String password) {
         return userService.register(id, userName, password);
     }
 

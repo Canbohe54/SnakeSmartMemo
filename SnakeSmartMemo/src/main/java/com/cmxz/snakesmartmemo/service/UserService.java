@@ -23,7 +23,7 @@ import java.util.Map;
 public interface UserService {
     String echo(String id);
 
-    String register(String id, String userName, String password);
+    Map<String, Object> register(String id, String userName, String password);
 
     Map<String, Object> login(String id, String password);
 
@@ -55,21 +55,28 @@ class UserServerImpl implements UserService {
      * @param password 密码存储需要加密
      * @return 返回注册是否成功
      */
-    public String register(String id, String userName, String password) {
+    public Map<String, Object> register(String id, String userName, String password) {
+        Map<String, Object> res = new HashMap<>();
         //新建User对象，并查找是否已存在
         User newUser = new User(userName, id);
         User uExist = userDao.getUserInfoById(id);
 
         IdAndPassword newIdAndPassword = new IdAndPassword(id, password, null);
 //        IdAndPassword ipExist = idAndPasswordDao.getByIdAndPwd(newIdAndPassword);
-        if (uExist != null) {
-            return "user has been exist";
-        }
+        try {
+            if (uExist != null) {
 
-        //将信息插入user_info，id_and_passwords表
-        userDao.insert(newUser);
-        idAndPasswordDao.insert(newIdAndPassword);
-        return "register successfully";
+                throw new RuntimeException("UserHasRegisterException");
+            }
+            //将信息插入user_info，id_and_passwords表
+            userDao.insert(newUser);
+            idAndPasswordDao.insert(newIdAndPassword);
+            res.put("statusMsg", "success");
+            res.put("userInfo", uExist);
+        } catch (RuntimeException e) {
+            res.put("statusMsg", "UserHasRegisterException");
+        }
+        return res;
     }
 
     public Map<String, Object> login(String id, String password) {
@@ -161,7 +168,7 @@ class UserServerImpl implements UserService {
                 throw new TokenExpirationTimeException();
             }
             //查询是否存在文件，不存在则让其先上传
-            if(!qiniuKodoUtil.inList(id,fileName)){
+            if (!qiniuKodoUtil.inList(id, fileName)) {
                 throw new FileNotFoundException();
             }
             String encodedFileName = URLEncoder.encode(fileName, "utf-8").replace("+", "%20");
@@ -189,6 +196,6 @@ class UserServerImpl implements UserService {
     }
 
     public void inList(String id, String fileName) {
-        qiniuKodoUtil.inList(id,fileName);
+        qiniuKodoUtil.inList(id, fileName);
     }
 }
