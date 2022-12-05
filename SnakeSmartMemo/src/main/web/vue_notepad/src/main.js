@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import Element from 'element-ui'
 import axios from 'axios'
+// import vueAxios from 'vue-axios'
 
 import mavonEditor from 'mavon-editor'
 

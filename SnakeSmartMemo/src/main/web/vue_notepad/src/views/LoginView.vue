@@ -11,20 +11,19 @@
           :model="ruleForm"
           :rules="rules"
           ref="ruleForm"
-          label-width="100px"
           class="demo-ruleForm"
         >
-          <el-form-item label="用户名" prop="username">
-            <el-input v-model="ruleForm.username"></el-input>
-          </el-form-item>
-          <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="ruleForm.password"></el-input>
-          </el-form-item>
-
+        <el-form-item label="" prop="id">
+              <el-input v-model="ruleForm.id" prefix-icon="el-icon-user-solid" autocomplete="off" placeholder="请输入账户ID"></el-input>
+            </el-form-item>
+            <el-form-item label="" prop="password">
+              <el-input type="password" v-model="ruleForm.password" prefix-icon="el-icon-lock" autocomplete="off" placeholder="请输入密码"></el-input>
+            </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')" class="submit">立即登录</el-button>
             <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
-            <el-link href="#" target="_blank" class="regLink">还没有账户？点击注册</el-link>
+            <!-- <el-link href="#" target="_self" class="regLink">还没有账户？点击注册</el-link> -->
+            <router-link to="/Register" class="regLink">还没有账户？点击注册</router-link>
           </el-form-item>
         </el-form>
       </el-main>
@@ -38,50 +37,59 @@ export default {
   data() {
     return {
       ruleForm: {
-        username: "",
+        id: "",
         password: "",
       },
       rules: {
-        username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+        id: [
+          { required: true, message: "请输入账户ID", trigger: "blur" },
           {
-            min: 3,
+            min: 4,
             max: 15,
-            message: "长度在 6 到 15 个字符",
+            message: "长度在 4 到 15 个字符",
             trigger: "blur",
           },
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "change" },
+          { required: true, message: "请输入密码", trigger: "blur" },
         ],
       },
     };
   },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          const _this = this;
-          this.$axios.post("/login", this.ruleForm).then((res) => {
-            console.log(res.data);
-            const jwt = res.headers["authorization"];
-            const userInfo = res.data.data;
-
-            // 把数据共享出去
-            _this.$store.commit("SET_TOKEN", jwt);
-            _this.$store.commit("SET_USERINFO", userInfo);
-
-            // 获取
-            console.log(_this.$store.getters.getUser);
-
-            _this.$router.push("/blogs");
-          });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
+      this.$message({
+          message: '登录成功',
+          type: 'success'
+        });
+      this.$router.push({
+        path:'/'
       });
-    },
+    }
+    // submitForm(formName) {
+    //   this.$refs[formName].validate((valid) => {
+    //     if (valid) {
+    //       const _this = this;
+    //       this.$axios.post("/login", this.ruleForm).then((res) => {
+    //         console.log(res.data);
+    //         const jwt = res.headers["authorization"];
+    //         const userInfo = res.data.data;
+
+    //         // 把数据共享出去
+    //         _this.$store.commit("SET_TOKEN", jwt);
+    //         _this.$store.commit("SET_USERINFO", userInfo);
+
+    //         // 获取
+    //         console.log(_this.$store.getters.getUser);
+
+    //         _this.$router.push("/blogs");
+    //       });
+    //     } else {
+    //       console.log("error submit!!");
+    //       return false;
+    //     }
+    //   });
+    // },
     // resetForm(formName) {
     //   this.$refs[formName].resetFields();
     // }
@@ -144,16 +152,22 @@ body > .el-container {
   margin: 5px 0 0 0;
 }
 .regLink {
-  display: block;
-  height: 20px;
-  line-height: 20px;
-  margin:0 10px 0 0;
-  float:right;
-  
-}
+    text-decoration: none;
+    color: #606266;
+    font: 14px "Microsoft YaHei";
+    display: block;
+    height: 20px;
+    line-height: 20px;
+    margin:0 10px 0 0;
+    float:right;
+    
+  }
+  .regLink:hover {
+    color:#5999fe;
+  }
 .submit {
   position: relative;
-  left: 20px;
+  left: 75px;
 }
 .demo-ruleForm {
   max-width: 500px;

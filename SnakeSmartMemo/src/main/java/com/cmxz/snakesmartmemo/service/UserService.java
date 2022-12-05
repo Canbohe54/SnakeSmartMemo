@@ -25,6 +25,7 @@ public interface UserService {
 
     String register(String id, String userName, String password);
 
+
     Map<String, Object> login(String id, String password);
 
     Map<String, Object> upload(String id, String token, MultipartFile file, String filename);
