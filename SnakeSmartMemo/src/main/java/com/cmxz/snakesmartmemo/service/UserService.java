@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +27,9 @@ public interface UserService {
 
     Map<String, Object> login(String id, String password);
 
-    Map<String, Object> upload(String id, MultipartFile file, String filename);
+    Map<String, Object> upload(String id, String token, MultipartFile file, String filename);
 
+    Map<String, Object> getFileUrl(String id, String token, String filename);
 }
 
 @Service
@@ -99,12 +98,13 @@ class UserServerImpl implements UserService {
      * @param filename 保存到oss桶的文件名
      * @return 返回保存文件是否成功, 不成功返回对应异常
      */
-    public Map<String, Object> upload(String id, MultipartFile file, String filename) {
+    public Map<String, Object> upload(String id, String token, MultipartFile file, String filename) {
         Map<String, Object> response = new HashMap<>();
         try {
-            //获取token，token为空则过期，后期可完善token的相关业务逻辑
+            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
             IdAndPassword iAndP = idAndPasswordDao.getById(id);
-            if (iAndP.getToken() == null) {
+            String serverToken = iAndP.getToken();
+            if (serverToken == null || !serverToken.equals(token)) {
                 throw new TokenExpirationTimeException();
             }
             //根据id获取判断user是否存在
@@ -130,9 +130,9 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "successfully upload " + filename);
             //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
             File tem = new File(f.toURI());
-            if (f.delete()){
+            if (f.delete()) {
                 System.out.println("删除成功");
-            }else {
+            } else {
                 System.out.println("删除失败");
             }
 
@@ -150,4 +150,33 @@ class UserServerImpl implements UserService {
         return response;
     }
 
+    /**
+     * 获取对应文件的下载链接，不检查是否存在，该函数用于链接分享功能
+     *
+     * @param id       用于构建url和查询服务器token
+     * @param token    token用于检测登录是否到期
+     * @param fileName 指定文件名
+     * @return 下载文件的链接
+     */
+    public Map<String, Object> getFileUrl(String id, String token, String fileName) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
+            IdAndPassword iAndP = idAndPasswordDao.getById(id);
+            String serverToken = iAndP.getToken();
+            if (serverToken == null || !serverToken.equals(token)) {
+                throw new TokenExpirationTimeException();
+            }
+            String encodedFileName = URLEncoder.encode(fileName, "utf-8").replace("+", "%20");
+            String finalUrl = String.format("%s/notes/%s/%s", "http://" + qiniuKodoUtil.getDomain(), id, encodedFileName);
+            response.put("fileUrl", finalUrl);
+            response.put("statusMsg", "success");
+        } catch (UnsupportedEncodingException e) {
+            response.put("statusMsg", "UnsupportedEncodingException");
+        } catch (TokenExpirationTimeException e) {
+            response.put("statusMsg", "TokenExpirationTimeException");
+        }
+        return response;
+    }
 }

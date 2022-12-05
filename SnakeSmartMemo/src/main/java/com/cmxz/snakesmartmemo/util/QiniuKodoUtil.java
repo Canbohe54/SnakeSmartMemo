@@ -45,6 +45,10 @@ public class QiniuKodoUtil {
      */
     String delimiter = "";
 
+    public String getDomain() {
+        return domain;
+    }
+
     /**
      * 列举空间文件列表
      */
