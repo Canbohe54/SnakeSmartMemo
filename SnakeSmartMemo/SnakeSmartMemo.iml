@@ -18,7 +18,11 @@
       </configuration>
     </facet>
     <facet type="Python" name="Python">
+<<<<<<< Updated upstream
       <configuration sdkName="Python 3.10 (Python)" />
+=======
+      <configuration sdkName="" />
+>>>>>>> Stashed changes
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
@@ -103,6 +107,9 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okhttp3:okhttp:3.14.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okio:okio:1.17.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
+<<<<<<< Updated upstream
     <orderEntry type="library" name="Python 3.10 (Python) interpreter library" level="application" />
+=======
+>>>>>>> Stashed changes
   </component>
 </module>

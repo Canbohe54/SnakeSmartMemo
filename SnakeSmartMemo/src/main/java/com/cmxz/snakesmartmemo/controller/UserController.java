@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.Map;
-
+@CrossOrigin
 @RestController
 @RequestMapping("ssm/users")
 public class UserController {
@@ -22,6 +22,11 @@ public class UserController {
     public Map<String, Object> register(@RequestParam("id") String id, @RequestParam("user_name") String userName, @RequestParam("password") String password) {
         return userService.register(id, userName, password);
     }
+
+//    @RequestMapping(value = "register", method = RequestMethod.POST)
+//    public String register(@RequestParam("ruleForm")RegisterRequest regReq){
+//        return userService.register(regReq);
+//    }
 
     @RequestMapping(value = "echo", method = RequestMethod.GET)
     public String echo(@RequestParam("id") String id) {
