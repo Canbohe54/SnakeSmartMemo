@@ -29,7 +29,7 @@ public interface UserService {
 
     Map<String, Object> upload(String id, String token, MultipartFile file, String filename);
 
-    Map<String, Object> getFileUrl(String id, String token, String filename);
+    Map<String, Object> share(String id, String token, String filename);
 }
 
 @Service
@@ -102,9 +102,7 @@ class UserServerImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         try {
             //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
-            IdAndPassword iAndP = idAndPasswordDao.getById(id);
-            String serverToken = iAndP.getToken();
-            if (serverToken == null || !serverToken.equals(token)) {
+            if (!hasLogin(id, token)) {
                 throw new TokenExpirationTimeException();
             }
             //根据id获取判断user是否存在
@@ -130,22 +128,17 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "successfully upload " + filename);
             //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
             File tem = new File(f.toURI());
-            if (f.delete()) {
-                System.out.println("删除成功");
-            } else {
+            if (!f.delete())
                 System.out.println("删除失败");
-            }
 
         } catch (UserNotFoundException e) {
             response.put("statusMsg", "UserNotFoundException");
-        } catch (FileNotFoundException e) {
-            response.put("statusMsg", "FileNotFoundException");
-        } catch (TokenExpirationTimeException e) {
-            response.put("statusMsg", "TokenExpirationTimeException");
-        } catch (java.io.FileNotFoundException e) {
+        } catch (FileNotFoundException | java.io.FileNotFoundException e) {
             response.put("statusMsg", "FileNotFoundException");
         } catch (IOException e) {
-            //throw new RuntimeException(e);
+            response.put("statusMsg", "WriteFileException");
+        } catch (TokenExpirationTimeException e) {
+            response.put("statusMsg", "TokenExpirationTimeException");
         }
         return response;
     }
@@ -158,15 +151,17 @@ class UserServerImpl implements UserService {
      * @param fileName 指定文件名
      * @return 下载文件的链接
      */
-    public Map<String, Object> getFileUrl(String id, String token, String fileName) {
+    public Map<String, Object> share(String id, String token, String fileName) {
         Map<String, Object> response = new HashMap<>();
 
         try {
             //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
-            IdAndPassword iAndP = idAndPasswordDao.getById(id);
-            String serverToken = iAndP.getToken();
-            if (serverToken == null || !serverToken.equals(token)) {
+            if (!hasLogin(id, token)) {
                 throw new TokenExpirationTimeException();
+            }
+            //查询是否存在文件，不存在则让其先上传
+            if(!qiniuKodoUtil.inList(id,fileName)){
+                throw new FileNotFoundException();
             }
             String encodedFileName = URLEncoder.encode(fileName, "utf-8").replace("+", "%20");
             String finalUrl = String.format("%s/notes/%s/%s", "http://" + qiniuKodoUtil.getDomain(), id, encodedFileName);
@@ -174,9 +169,25 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "success");
         } catch (UnsupportedEncodingException e) {
             response.put("statusMsg", "UnsupportedEncodingException");
+        } catch (FileNotFoundException e) {
+            response.put("statusMsg", "CloudFileNotFoundException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
         }
         return response;
+    }
+
+    public boolean hasLogin(String id, String token) {
+        //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
+        IdAndPassword iAndP = idAndPasswordDao.getById(id);
+        String serverToken = iAndP.getToken();
+        if (serverToken == null || !serverToken.equals(token)) {
+            return false;
+        }
+        return true;
+    }
+
+    public void inList(String id, String fileName) {
+        qiniuKodoUtil.inList(id,fileName);
     }
 }

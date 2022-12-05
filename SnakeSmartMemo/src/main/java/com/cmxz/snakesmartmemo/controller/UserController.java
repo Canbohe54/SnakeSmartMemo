@@ -38,8 +38,8 @@ public class UserController {
         return userService.upload(id, token, file, filename);
     }
 
-    @RequestMapping(value = "getFileUrl", method = RequestMethod.POST)
-    public Map<String, Object> getFileUrl(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("filename") String filename) {
-        return userService.getFileUrl(id, token, filename);
+    @RequestMapping(value = "share", method = RequestMethod.POST)
+    public Map<String, Object> share(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("file_name") String fileName) {
+        return userService.share(id, token, fileName);
     }
 }
