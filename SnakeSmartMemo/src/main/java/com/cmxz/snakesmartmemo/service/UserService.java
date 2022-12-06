@@ -87,9 +87,9 @@ class UserServerImpl implements UserService {
             if (exist == null) {
                 throw new UserNotFoundException();
             }
-            IdAndPassword IdAndPwd = idAndPasswordDao.getByIdAndPwd(id,password);
+            IdAndPassword IdAndPwd = idAndPasswordDao.getByIdAndPwd(id, password);
 
-            if (IdAndPwd==null) {
+            if (IdAndPwd == null) {
                 throw new PasswdErrorException();
             }
             response.put("statusMsg", "success");
