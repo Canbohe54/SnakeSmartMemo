@@ -12,6 +12,7 @@
     "element-ui": "^2.15.12",
     "mavon-editor": "^2.10.4",
     "vue": "^2.6.14",
+    "vue-axios": "^3.5.2",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2"
   },

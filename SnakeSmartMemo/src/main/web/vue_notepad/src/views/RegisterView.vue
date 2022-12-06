@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <div class="snakelogo"></div>
-        <div class="loginText">登录</div>
+        <div class="loginText">注册</div>
         <!-- <img class="mlogo" src="https://www.markerhub.com/dist/images/logo/markerhub-logo.png" alt=""> -->
       </el-header>
       <el-main>
@@ -13,6 +13,14 @@
           ref="ruleForm"
           class="demo-ruleForm"
         >
+          <el-form-item label="" prop="username">
+            <el-input
+              v-model="ruleForm.username"
+              prefix-icon="el-icon-s-check"
+              autocomplete="off"
+              placeholder="请输入用户名"
+            ></el-input>
+          </el-form-item>
           <el-form-item label="" prop="id">
             <el-input
               v-model="ruleForm.id"
@@ -30,14 +38,23 @@
               placeholder="请输入密码"
             ></el-input>
           </el-form-item>
+          <el-form-item label="" prop="passwordAgain">
+            <el-input
+              type="password"
+              v-model="ruleForm.passwordAgain"
+              prefix-icon="el-icon-lock"
+              autocomplete="off"
+              placeholder="请再次输入密码"
+            ></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm()" class="submit"
-              >立即登录</el-button
+              >立即注册</el-button
             >
             <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
-            <!-- <el-link href="#" target="_self" class="regLink">还没有账户？点击注册</el-link> -->
-            <router-link to="/Register" class="regLink"
-              >还没有账户？点击注册</router-link
+            <!-- <el-link href="#" target="_self" class="regLink">已经有账户了？点击登录</el-link> -->
+            <router-link to="/Login" class="regLink"
+              >已经有账户了？点击登录</router-link
             >
           </el-form-item>
         </el-form>
@@ -45,17 +62,32 @@
     </el-container>
   </div>
 </template>
-
-<script>
+  
+  <script>
 export default {
-  name: "Login",
+  //在这里引入后端接口
+  name: "Register",
   data() {
+    let validatePassAgain = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.ruleForm.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       ruleForm: {
         id: "",
+        username: "",
         password: "",
       },
       rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+        ],
         id: [
           { required: true, message: "请输入账户ID", trigger: "blur" },
           {
@@ -65,39 +97,25 @@ export default {
             trigger: "blur",
           },
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur",
+          },
+        ],
+        passwordAgain: [
+          {
+            required: true,
+            message: "两次密码必须一致",
+            validator: validatePassAgain,
+            trigger: "blur",
+          },
+        ],
       },
     };
   },
   methods: {
-    submitForm() {
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          let id = this.ruleForm.id;
-          let password = this.ruleForm.password;
-          const params = new URLSearchParams();
-          params.append("id", id);
-          params.append("password", password);
-          this.$axios.post("ssm/users/login", params).then((resp) => {
-            if (resp.data.statusMsg == "success") {
-              this.$message({
-                message: "登录成功",
-                type: "success",
-              });
-              this.$router.push({
-                path: "/",
-              });
-            } else {
-              this.$message({
-                message: "登录失败",
-                type: "error",
-              });
-            }
-            console.log(resp);
-          });
-        }
-      });
-    },
     // submitForm(formName) {
     //   this.$refs[formName].validate((valid) => {
     //     if (valid) {
@@ -106,14 +124,11 @@ export default {
     //         console.log(res.data);
     //         const jwt = res.headers["authorization"];
     //         const userInfo = res.data.data;
-
     //         // 把数据共享出去
     //         _this.$store.commit("SET_TOKEN", jwt);
     //         _this.$store.commit("SET_USERINFO", userInfo);
-
     //         // 获取
     //         console.log(_this.$store.getters.getUser);
-
     //         _this.$router.push("/blogs");
     //       });
     //     } else {
@@ -125,11 +140,39 @@ export default {
     // resetForm(formName) {
     //   this.$refs[formName].resetFields();
     // }
+    submitForm() {
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          let id = this.ruleForm.id;
+          let user_name = this.ruleForm.username;
+          let password = this.ruleForm.password;
+          const params = new URLSearchParams();
+          params.append("id", id);
+          params.append("user_name", user_name);
+          params.append("password", password);
+          this.$axios.post("ssm/users/register", params).then((resp) => {
+            if (resp.data == "register successfully") {
+              this.$message({
+                message: "注册成功",
+                type: "success",
+              });
+              this.$refs.ruleForm.resetFields();
+              this.$router.push({ path: "/login" });
+            } else {
+              this.$message({
+                message: "注册失败",
+                type: "error",
+              });
+            }
+          });
+        }
+      });
+    },
   },
 };
 </script>
-
-<style scoped>
+  
+  <style scoped>
 .el-header,
 .el-footer {
   /* background-color: #B3C0D1; */
@@ -151,9 +194,8 @@ export default {
   color: #333;
   text-align: center;
   /* line-height: 160px;
-  margin: 50px 0 0 0; */
+    margin: 50px 0 0 0; */
 }
-
 body > .el-container {
   margin-bottom: 40px;
 }
@@ -168,9 +210,9 @@ body > .el-container {
 }
 
 /* .mlogo {
-    height: 60%;
-    margin-top: 10px;
-  } */
+      height: 60%;
+      margin-top: 10px;
+    } */
 .snakelogo {
   display: block;
   height: 180px;
@@ -190,7 +232,7 @@ body > .el-container {
   display: block;
   height: 20px;
   line-height: 20px;
-  margin: 0 10px 0 0;
+  margin: 0 0 0 0;
   float: right;
 }
 .regLink:hover {

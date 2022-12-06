@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import NotepadView from '../views/NotepadView.vue'
 
 Vue.use(VueRouter)
 
@@ -19,9 +21,19 @@ const routes = [
   //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   // }
   {
+    path: '/',
+    name: 'notepad',
+    component: NotepadView
+  },
+  {
     path: '/login',
-    name: '/login',
+    name: 'login',
     component: LoginView
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView
   }
 ]
 

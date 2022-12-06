@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Map;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UserServerImplTest extends TestCase {
     @Mock
@@ -26,7 +28,7 @@ public class UserServerImplTest extends TestCase {
         Mockito.when(userDao.getUserInfo(mockUser)).thenReturn(null);
 
         //执行单元测试逻辑
-        String res = userServer.register("4","xzq1","000000");
+        Map<String, Object> res = userServer.register("4","xzq1","000000");
         System.out.println(res);
     }
 }

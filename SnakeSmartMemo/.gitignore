@@ -5,3 +5,4 @@ db.properties
 /src/main/resources/tk.py
 /target/classes/tk.py
 /target/classes/application.yml
+*.log

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 @Component
 @Mapper
@@ -35,7 +36,7 @@ public class QiniuKodoUtil {
     /**
      * 文件名前缀
      */
-    String prefix = "";
+    String prefix = "notes/";
     /**
      * 每次迭代的长度限制，最大1000，推荐值 1000
      */
@@ -45,22 +46,24 @@ public class QiniuKodoUtil {
      */
     String delimiter = "";
 
+    public String getDomain() {
+        return domain;
+    }
+
     /**
      * 列举空间文件列表
      */
-    public void listSpaceFiles() {
+    public ArrayList<FileInfo[]> listSpaceFiles(String id) {
+        ArrayList<FileInfo[]> re = new ArrayList<>();
         Auth auth = Auth.create(accessKey, secretKey);
         BucketManager bucketManager = new BucketManager(auth, cfg);
-        BucketManager.FileListIterator fileListIterator = bucketManager.createFileListIterator(bucket, prefix, limit, delimiter);
+        BucketManager.FileListIterator fileListIterator = bucketManager.createFileListIterator(bucket, prefix + id, limit, delimiter);
         while (fileListIterator.hasNext()) {
             //处理获取的file list结果
             FileInfo[] items = fileListIterator.next();
-            for (FileInfo item : items) {
-                System.out.println(item.key);
-                System.out.println(item.fsize / 1024 + "kb");
-                System.out.println(item.mimeType);
-            }
+            re.add(items);
         }
+        return re;
     }
 
     /**
@@ -97,7 +100,7 @@ public class QiniuKodoUtil {
     /**
      * 直接上传文件
      *
-     * @param file 上传的文件
+     * @param file     上传的文件
      * @param fileName 保存到oss桶的名字
      */
     public void upload(File file, String fileName) {
@@ -125,6 +128,7 @@ public class QiniuKodoUtil {
             }
         }
     }
+
     /**
      * 获取下载文件的链接
      *
@@ -165,6 +169,18 @@ public class QiniuKodoUtil {
         } catch (QiniuException ex) {
             System.err.println(ex.response.toString());
         }
+    }
+
+    public boolean inList(String id, String fileName) {
+        String fullName = "notes/" + id + "/" + fileName;
+        ArrayList<FileInfo[]> fileList = listSpaceFiles(id);
+        for (FileInfo[] items : fileList) {
+            for (FileInfo item : items) {
+                if (fullName.equals(item.key))
+                    return true;
+            }
+        }
+        return false;
     }
 }
 

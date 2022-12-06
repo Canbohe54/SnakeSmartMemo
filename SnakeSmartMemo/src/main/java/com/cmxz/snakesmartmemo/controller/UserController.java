@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.Map;
-
+@CrossOrigin
 @RestController
 @RequestMapping("ssm/users")
 public class UserController {
@@ -19,9 +19,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String register(@RequestParam("id") String id, @RequestParam("user_name") String userName, @RequestParam("password") String password) {
+    public Map<String, Object> register(@RequestParam("id") String id, @RequestParam("user_name") String userName, @RequestParam("password") String password) {
         return userService.register(id, userName, password);
     }
+
+//    @RequestMapping(value = "register", method = RequestMethod.POST)
+//    public String register(@RequestParam("ruleForm")RegisterRequest regReq){
+//        return userService.register(regReq);
+//    }
 
     @RequestMapping(value = "echo", method = RequestMethod.GET)
     public String echo(@RequestParam("id") String id) {
@@ -34,7 +39,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "upload", method = RequestMethod.POST)
-    public Map<String, Object> share(@RequestParam("id") String id, @RequestParam("file") MultipartFile file, @RequestParam("filename") String filename) {
-        return userService.upload(id, file, filename);
+    public Map<String, Object> upload(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("file") MultipartFile file, @RequestParam("filename") String filename) {
+        return userService.upload(id, token, file, filename);
+    }
+
+    @RequestMapping(value = "share", method = RequestMethod.POST)
+    public Map<String, Object> share(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("file_name") String fileName) {
+        return userService.share(id, token, fileName);
     }
 }
