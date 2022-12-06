@@ -65,15 +65,20 @@ class UserServerImpl implements UserService {
         IdAndPassword newIdAndPassword = new IdAndPassword(id, password, null);
 //        IdAndPassword ipExist = idAndPasswordDao.getByIdAndPwd(newIdAndPassword);
         try {
+            if (id == null || id.equals("")) {
+                throw new NullOrEmptyIdException();
+            }
             if (uExist != null) {
 
-                throw new RuntimeException("UserHasRegisterException");
+                throw new NullOrEmptyIdException();
             }
             //将信息插入user_info，id_and_passwords表
             userDao.insert(newUser);
             idAndPasswordDao.insert(newIdAndPassword);
             res.put("statusMsg", "success");
             res.put("userInfo", uExist);
+        } catch (NullOrEmptyIdException e) {
+            res.put("statusMsg", "NullOrEmptyIdException");
         } catch (RuntimeException e) {
             res.put("statusMsg", "UserHasRegisterException");
         }
@@ -202,7 +207,4 @@ class UserServerImpl implements UserService {
         return true;
     }
 
-    public void inList(String id, String fileName) {
-        qiniuKodoUtil.inList(id, fileName);
-    }
 }
