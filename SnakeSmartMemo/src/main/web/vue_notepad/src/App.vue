@@ -1,15 +1,33 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Notepad</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/login">Login</router-link> |
-      <router-link to="/register">Register</router-link>
-    </nav>
-    <router-view/>
+    <el-header>
+      <el-row>
+        <el-col> </el-col>
+        <el-col>
+          <el-menu
+            default-active="notepad"
+            class="el-menu-demo"
+            mode="horizontal"
+            router
+          >
+            <el-menu-item index="notepad" route="/" class="notepad"
+              >笔记本</el-menu-item
+            >
+            <el-menu-item index="login" route="/login" class="loginAndReg"
+              >登录/注册</el-menu-item
+            >
+          </el-menu>
+        </el-col>
+      </el-row>
+    </el-header>
+    <el-main>
+          <router-view />
+    </el-main>
+
   </div>
 </template>
-
+<script>
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -30,5 +48,12 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+.notepad {
+  margin: 0 0 0 120px !important;
+}
+.loginAndReg {
+  float: right !important;
+  margin: 0 20px 0 0 !important;
 }
 </style>
