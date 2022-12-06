@@ -1,9 +1,7 @@
 package com.cmxz.snakesmartmemo.service;
 
+import com.cmxz.snakesmartmemo.bean.exceptions.*;
 import com.cmxz.snakesmartmemo.bean.exceptions.FileNotFoundException;
-import com.cmxz.snakesmartmemo.bean.exceptions.PermissionException;
-import com.cmxz.snakesmartmemo.bean.exceptions.TokenExpirationTimeException;
-import com.cmxz.snakesmartmemo.bean.exceptions.UserNotFoundException;
 import com.cmxz.snakesmartmemo.dao.IdAndPasswordDao;
 import com.cmxz.snakesmartmemo.dao.UserDao;
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
@@ -15,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+
+import java.lang.RuntimeException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,20 +82,26 @@ class UserServerImpl implements UserService {
 
     public Map<String, Object> login(String id, String password) {
         Map<String, Object> response = new HashMap<>();
-
         try {
             User exist = userDao.getUserInfoById(id);
             if (exist == null) {
                 throw new UserNotFoundException();
             }
+            IdAndPassword IdAndPwd = idAndPasswordDao.getByIdAndPwd(id,password);
+
+            if (IdAndPwd==null) {
+                throw new PasswdErrorException();
+            }
             response.put("statusMsg", "success");
             response.put("userInfo", exist);
-            return response;
         } catch (UserNotFoundException e) {
             response.put("statusMsg", "UserNotFoundException");
             response.put("userInfo", "");
-            return response;
+        } catch (PasswdErrorException e) {
+            response.put("statusMsg", "PasswdErrorException");
         }
+        return response;
+
     }
 
     /**

@@ -29,7 +29,7 @@ public class IdAndPasswordDaoTest extends TestCase {
 
         IdAndPassword demo = new IdAndPassword("3","mkymky",null);
         IdAndPasswordDao idAndPwdDao = sqlSession.getMapper(IdAndPasswordDao.class);
-        IdAndPassword info = idAndPwdDao.getByIdAndPwd(demo);
+        IdAndPassword info = idAndPwdDao.getByIdAndPwd("3", "mkymky" );
 
         System.out.println(info);
 
