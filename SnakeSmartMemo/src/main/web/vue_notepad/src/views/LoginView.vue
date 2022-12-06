@@ -13,17 +13,32 @@
           ref="ruleForm"
           class="demo-ruleForm"
         >
-        <el-form-item label="" prop="id">
-              <el-input v-model="ruleForm.id" prefix-icon="el-icon-user-solid" autocomplete="off" placeholder="请输入账户ID"></el-input>
-            </el-form-item>
-            <el-form-item label="" prop="password">
-              <el-input type="password" v-model="ruleForm.password" prefix-icon="el-icon-lock" autocomplete="off" placeholder="请输入密码"></el-input>
-            </el-form-item>
+          <el-form-item label="" prop="id">
+            <el-input
+              v-model="ruleForm.id"
+              prefix-icon="el-icon-user-solid"
+              autocomplete="off"
+              placeholder="请输入账户ID"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="" prop="password">
+            <el-input
+              type="password"
+              v-model="ruleForm.password"
+              prefix-icon="el-icon-lock"
+              autocomplete="off"
+              placeholder="请输入密码"
+            ></el-input>
+          </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')" class="submit">立即登录</el-button>
+            <el-button type="primary" @click="submitForm()" class="submit"
+              >立即登录</el-button
+            >
             <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
             <!-- <el-link href="#" target="_self" class="regLink">还没有账户？点击注册</el-link> -->
-            <router-link to="/Register" class="regLink">还没有账户？点击注册</router-link>
+            <router-link to="/Register" class="regLink"
+              >还没有账户？点击注册</router-link
+            >
           </el-form-item>
         </el-form>
       </el-main>
@@ -50,22 +65,39 @@ export default {
             trigger: "blur",
           },
         ],
-        password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-        ],
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$message({
-          message: '登录成功',
-          type: 'success'
-        });
-      this.$router.push({
-        path:'/'
+    submitForm() {
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          let id = this.ruleForm.id;
+          let password = this.ruleForm.password;
+          const params = new URLSearchParams();
+          params.append("id", id);
+          params.append("password", password);
+          this.$axios.post("ssm/users/login", params).then((resp) => {
+            if (resp.data.statusMsg == "success") {
+              this.$message({
+                message: "登录成功",
+                type: "success",
+              });
+              this.$router.push({
+                path: "/",
+              });
+            } else {
+              this.$message({
+                message: "登录失败",
+                type: "error",
+              });
+            }
+            console.log(resp);
+          });
+        }
       });
-    }
+    },
     // submitForm(formName) {
     //   this.$refs[formName].validate((valid) => {
     //     if (valid) {
@@ -152,19 +184,18 @@ body > .el-container {
   margin: 5px 0 0 0;
 }
 .regLink {
-    text-decoration: none;
-    color: #606266;
-    font: 14px "Microsoft YaHei";
-    display: block;
-    height: 20px;
-    line-height: 20px;
-    margin:0 10px 0 0;
-    float:right;
-    
-  }
-  .regLink:hover {
-    color:#5999fe;
-  }
+  text-decoration: none;
+  color: #606266;
+  font: 14px "Microsoft YaHei";
+  display: block;
+  height: 20px;
+  line-height: 20px;
+  margin: 0 10px 0 0;
+  float: right;
+}
+.regLink:hover {
+  color: #5999fe;
+}
 .submit {
   position: relative;
   left: 75px;

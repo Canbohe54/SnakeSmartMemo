@@ -48,10 +48,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="submitForm()"
-              class="submit"
+            <el-button type="primary" @click="submitForm()" class="submit"
               >立即注册</el-button
             >
             <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
@@ -144,31 +141,33 @@ export default {
     //   this.$refs[formName].resetFields();
     // }
     submitForm() {
-      let id = this.ruleForm.id;
-      let user_name = this.ruleForm.username;
-      let password = this.ruleForm.password;
-      // let json = {id:id,user_name:user_name,password:password}
-      const params = new URLSearchParams();
-      params.append('id', id);
-      params.append('user_name', user_name);
-      params.append('password', password);
-      this.$axios.post(
-        'http://localhost:9090/ssm/users/register',params).then((resp) =>{
-        if(resp.data=="register successfully"){
-          this.$message({
-          message: '注册成功',
-          type: 'success'
-        });
-        this.$refs.ruleForm.resetFields();
-        this.$router.push({path:'/login'});
-        }else{
-          this.$message({
-            message: '注册失败',
-            type: 'error'
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          let id = this.ruleForm.id;
+          let user_name = this.ruleForm.username;
+          let password = this.ruleForm.password;
+          const params = new URLSearchParams();
+          params.append("id", id);
+          params.append("user_name", user_name);
+          params.append("password", password);
+          this.$axios.post("ssm/users/register", params).then((resp) => {
+            if (resp.data == "register successfully") {
+              this.$message({
+                message: "注册成功",
+                type: "success",
+              });
+              this.$refs.ruleForm.resetFields();
+              this.$router.push({ path: "/login" });
+            } else {
+              this.$message({
+                message: "注册失败",
+                type: "error",
+              });
+            }
           });
         }
-      })
-    }
+      });
+    },
   },
 };
 </script>
