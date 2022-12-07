@@ -70,7 +70,7 @@ class UserServerImpl implements UserService {
             }
             if (uExist != null) {
 
-                throw new NullOrEmptyIdException();
+                throw new RuntimeException();
             }
             //将信息插入user_info，id_and_passwords表
             userDao.insert(newUser);
