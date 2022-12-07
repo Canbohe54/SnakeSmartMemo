@@ -48,9 +48,9 @@ class TimeParser:
         pattern = "((\\d{4}-\\d{1,2}-\\d{1,2})?(\\d{4}-\\d{1,2})?(\\d{1,2}-\\d{1,2})?([- ]?\\d{1,2}:\\d{1," \
                   "2})?)?((\\d{4}年\\d{1,2}月\\d{1,2}日)?(\\d{4}年\\d{1,2}月)?(\\d{1,2}月\\d{1,2}日)?(\\d{1,2}" \
                   "[时点]\\d{1,2}分)?(\\d{1,2}[时点])?)?"
-        if "start_ignore_flag" in kwargs.keys():
+        if "start_ignore_flag" in kwargs.keys() and kwargs["start_ignore_flag"] is not None:
             pattern = "(?!{})".format(kwargs.pop("start_ignore_flag")) + pattern
-        if "end_ignore_flag" in kwargs.keys():
+        if "end_ignore_flag" in kwargs.keys() and kwargs["end_ignore_flag"] is not None:
             pattern = pattern + "(?!{})".format(kwargs.pop("end_ignore_flag"))
 
         new_high_lighter = partial(self.__time_high_light, start_flag=kwargs.pop("start_flag", "<"),

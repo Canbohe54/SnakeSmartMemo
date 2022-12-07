@@ -6,7 +6,7 @@ import json
 import time
 from datetime import datetime
 
-from src.main.resources import tk
+from src.main.python.resources import tk
 
 
 def get_authorization(params):
