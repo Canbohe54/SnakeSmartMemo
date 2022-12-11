@@ -35,6 +35,6 @@ public class Tools {
     }
 
     public static void main(String[] args) throws Exception{
-        System.out.println(CallPythonTools("\"time.parser\"", "[\"2015年10月3日去上学\", {}]"));
+        System.out.println(CallPythonTools("time.parser", "[2015年10月3日去上学, {}]"));
     }
 }
