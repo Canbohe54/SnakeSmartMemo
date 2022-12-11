@@ -41,7 +41,7 @@ class VisitorServiceImpl implements VisitorService{
             fis.close();
 
             //调用CallPythonTools处理
-            String data = "[" + new String(bytesArray) + ",{}]";
+            String data = "[\"" + new String(bytesArray) + "\",{}]";
             String events = tools.CallPythonTools(comm, data);
             response.put("statusMsg", "success");
             response.put("events", events);
@@ -83,7 +83,7 @@ class VisitorServiceImpl implements VisitorService{
             fis.close();
 
             //调用CallPythonTools处理
-            String data = "[" + new String(bytesArray) + "]";
+            String data = "[\"" + new String(bytesArray) + "\"]";
             String events = tools.CallPythonTools(comm, data);
             response.put("statusMsg", "success");
             response.put("events", events);

@@ -14,7 +14,7 @@ print(len(m))
 lenData = {"len": len(m)}
 s.sendto(json.dumps(lenData).encode(), (host, port))
 s.sendto(m, (host, port))
-msg = s.recv(1024)
+msg = s.recv(1024*1024)
 s.close()
 print("Close.")
 print(msg.decode('utf-8'))
