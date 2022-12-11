@@ -47,4 +47,13 @@ public class UserController {
     public Map<String, Object> share(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("file_name") String fileName) {
         return userService.share(id, token, fileName);
     }
+
+    @RequestMapping(value = "event",method = RequestMethod.POST)
+    public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
+        return userService.event(id,token,file);
+    }
+    @RequestMapping(value = "recognize",method = RequestMethod.POST)
+    public Map<String,Object> recognize(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
+        return userService.recognize(id,token,file);
+    }
 }

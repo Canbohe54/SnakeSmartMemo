@@ -1,10 +1,14 @@
 package com.cmxz.snakesmartmemo.util;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-
+@Component
+@Mapper
 public class Tools {
     public static String CallPythonTools(String comm, String data) throws Exception{
         InetAddress addr = InetAddress.getLocalHost();
@@ -33,8 +37,8 @@ public class Tools {
         return respText;
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(CallPythonTools("time.parser", "[\"2015年10月3日去上学\", {}]"));
+    //public static void main(String[] args) throws Exception {
+    //    System.out.println(CallPythonTools("time.parser", "[\"2015年10月3日去上学\", {}]"));
 //        try{
 //            System.out.println(CallPythonTools("time.parser", "[\"2015年10月3日去上学\", {}]"));
 //        }
@@ -42,5 +46,5 @@ public class Tools {
 //            System.out.println("Error. " + e.getMessage());
 //        }
 
-    }
+    //}
 }
