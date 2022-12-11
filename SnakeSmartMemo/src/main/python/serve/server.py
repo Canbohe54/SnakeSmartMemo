@@ -24,9 +24,12 @@ def start():
     server_socket.bind((addr, server_port))
     server_socket.listen(max_listen_num)
 
+    print("Start to listen on port 11451...")
+
     while True:
         client_socket, addr = server_socket.accept()
         logging.debug("Accept to {}".format(addr))
+        _dataGet = None
         try:
             _dataGet = client_socket.recvfrom(16)[0].decode()
             logging.debug("Get data length from {}".format(addr))
@@ -40,18 +43,15 @@ def start():
             client_socket.sendto(result.encode(), addr)
 
         except TypeError as e:
-            print(e)
-            logging.warning("Type Error.")
+            logging.warning("Type Error. Request from {}. RequestInfo: {}".format(addr, _dataGet))
         except json.decoder.JSONDecodeError as e:
-            print(e)
-            logging.warning("JSON Decode Error.")
+            logging.warning("JSON Decode Error. Request from {}. RequestInfo: {}".format(addr, _dataGet))
         except KeyError as e:
-            print(e)
-            logging.warning("Key Error.")
+            logging.warning("Key Error. Request from {}. RequestInfo: {}".format(addr, _dataGet))
         except ApiNotExistError as e:
             logging.warning(e)
         except Exception as e:
-            logging.error("Unknown Error Occurred. ErrorInfo: {}".format(e))
+            logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
             client_socket.sendto(b"Error.", addr)
             logging.debug("Close connect to {}".format(addr))
