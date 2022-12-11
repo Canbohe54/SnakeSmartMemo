@@ -12,9 +12,8 @@
     <!-- <el-button @click="formtoHtml">转换为Html样式</el-button> -->
     <div class="textEditor">
       <vue-html5-editor
-      content=""
+      :content=ruleForm.content
         v-model="ruleForm.content"
-        height=600
         show-module-name="true"
         @change="updateData"
       ></vue-html5-editor>

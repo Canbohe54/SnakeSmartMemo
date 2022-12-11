@@ -84,6 +84,10 @@ export default {
                 message: "登录成功",
                 type: "success",
               });
+              //token = resp.data.token;
+              let userInfo = resp.data.userInfo;
+              //this.$store.commit("SET_TOKEN",token)
+              this.$store.commit("SET_USERINFO", userInfo)
               this.$router.push({
                 path: "/",
               });
