@@ -7,7 +7,11 @@ import com.cmxz.snakesmartmemo.dao.UserDao;
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
 import com.cmxz.snakesmartmemo.pojo.User;
 import com.cmxz.snakesmartmemo.util.QiniuKodoUtil;
+import com.cmxz.snakesmartmemo.util.Tools;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.nio.file.Path;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,8 +20,7 @@ import java.io.*;
 
 import java.lang.RuntimeException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public interface UserService {
@@ -25,12 +28,15 @@ public interface UserService {
 
     Map<String, Object> register(String id, String userName, String password);
 
-
     Map<String, Object> login(String id, String password);
 
     Map<String, Object> upload(String id, String token, MultipartFile file, String filename);
 
     Map<String, Object> share(String id, String token, String filename);
+
+    Map<String, Object> event(String id, String token, MultipartFile file);
+
+    Map<String, Object> recognize(String id, String token, MultipartFile file);
 }
 
 @Service
@@ -44,6 +50,8 @@ class UserServerImpl implements UserService {
     @Autowired
     private QiniuKodoUtil qiniuKodoUtil;
 
+    @Autowired
+    private Tools tools;
     public String echo(String id) {
         return id;
     }
@@ -144,7 +152,7 @@ class UserServerImpl implements UserService {
 
             qiniuKodoUtil.upload(f, "notes/" + id + "/" + filename);
 
-            response.put("statusMsg", "successfully upload " + filename);
+            response.put("statusMsg", "success");
             //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
             File tem = new File(f.toURI());
             if (!f.delete())
@@ -207,4 +215,111 @@ class UserServerImpl implements UserService {
         return true;
     }
 
+    /**
+     * 笔记内容生成事件接口
+     *
+     * @param id    用于查询服务器token
+     * @param token token用于检测登录是否到期
+     * @param file  需要处理的笔记文件
+     * @return
+     */
+    public Map<String, Object> event(String id, String token, MultipartFile file) {
+        Map<String, Object> response = new HashMap<>();
+        String comm = "time.parser";
+        try {
+            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
+            if (!hasLogin(id, token)) {
+                throw new TokenExpirationTimeException();
+            }
+            //将前端发过来的文件转为File
+            File f = new File(file.getOriginalFilename());
+            BufferedOutputStream out = new BufferedOutputStream(
+                    new FileOutputStream(f));
+            out.write(file.getBytes());
+            out.flush();
+            out.close();
+
+            //将File转化为字节数组
+            byte[] bytesArray = new byte[(int) f.length()];
+            FileInputStream fis = new FileInputStream(f);
+            fis.read(bytesArray); //read file into bytes[]
+            fis.close();
+
+            //调用CallPythonTools处理
+            String data = "[" + new String(bytesArray) + ",{}]";
+            String events = tools.CallPythonTools(comm, data);
+            response.put("statusMsg", "success");
+            response.put("events", events);
+
+            //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
+            File tem = new File(f.toURI());
+            if (!f.delete())
+                System.out.println("删除失败");
+
+        } catch (TokenExpirationTimeException e) {
+            response.put("statusMsg", "TokenExpirationTimeException");
+        } catch (java.io.FileNotFoundException e) {
+            response.put("statusMsg", "FileNotFoundException");
+        } catch (IOException e) {
+            response.put("statusMsg", e.toString());
+        } catch (Exception e) {
+            response.put("statusMsg", e.toString());
+        }
+
+        return response;
+    }
+
+    /**
+     * 音频文件转文字接口
+     *
+     * @param id    用于查询服务器token
+     * @param token token用于检测登录是否到期
+     * @param file  需要处理的音频文件
+     * @return 音频转文字后的文字
+     */
+    public Map<String, Object> recognize(String id, String token, MultipartFile file) {
+        Map<String, Object> response = new HashMap<>();
+        String comm = "recognition.NONE";
+        try {
+            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
+            if (!hasLogin(id, token)) {
+                throw new TokenExpirationTimeException();
+            }
+            //将前端发过来的文件转为File
+            File f = new File(file.getOriginalFilename());
+            BufferedOutputStream out = new BufferedOutputStream(
+                    new FileOutputStream(f));
+            out.write(file.getBytes());
+            out.flush();
+            out.close();
+
+            //将File转化为字节数组
+            byte[] bytesArray = new byte[(int) f.length()];
+            FileInputStream fis = new FileInputStream(f);
+            fis.read(bytesArray); //read file into bytes[]
+            fis.close();
+
+            //调用CallPythonTools处理
+            String data = "[" + new String(bytesArray) + "]";
+            String events = tools.CallPythonTools(comm, data);
+            response.put("statusMsg", "success");
+            response.put("events", events);
+
+            //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
+            File tem = new File(f.toURI());
+            if (!f.delete())
+                System.out.println("删除失败");
+
+        } catch (TokenExpirationTimeException e) {
+            throw new RuntimeException(e);
+        } catch (java.io.FileNotFoundException e) {
+            response.put("statusMsg", "FileNotFoundException");
+        } catch (IOException e) {
+            response.put("statusMsg", e.toString());
+        }catch (Exception e) {
+            response.put("statusMsg", e.toString());
+        }
+
+        return response;
+    }
 }

@@ -89,5 +89,6 @@ def recognize(original_data, voice_format, voice_language="16k_zh"):
         "Authorization": get_authorization(post_data)
     }
     recognition_res = requests.post(post_url, headers=post_headers, data=json.dumps(post_data))
-    return recognition_res.text
+    res = json.loads(recognition_res.text)
+    return res['Response']['Result']
 

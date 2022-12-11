@@ -19,40 +19,37 @@ def start():
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG, format=LOG_FORMAT)
 
     # 创建服务器套接字
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     addr = socket.gethostname()
     server_socket.bind((addr, server_port))
-    server_socket.listen(max_listen_num)
+
+    print("Start to listen on port 11451...")
 
     while True:
-        client_socket, addr = server_socket.accept()
         logging.debug("Accept to {}".format(addr))
+        _dataGetRaw = server_socket.recvfrom(1024)[0].decode()
+        print(_dataGetRaw)
         try:
-            _dataGet = client_socket.recvfrom(16)[0].decode()
-            logging.debug("Get data length from {}".format(addr))
-            _dataGet = json.loads(_dataGet)
-            _dataGet = json.loads(client_socket.recvfrom(_dataGet["len"])[0].decode())
+            _dataGet = json.loads(_dataGetRaw)
+            _dataGetRaw = server_socket.recvfrom(_dataGet['len'])[0].decode()
+            _dataGet = json.loads(_dataGetRaw)
             logging.debug("Get requests from {}".format(addr))
             api = _dataGet["api"]
             data = _dataGet["data"]
             logging.debug("Get request data successful. Now start loop to controller.")
             result = control(api, data)
-            client_socket.sendto(result.encode(), addr)
+            server_socket.sendto(result.encode(), (addr, 50310))
 
         except TypeError as e:
-            print(e)
-            logging.warning("Type Error.")
+            logging.warning("Type Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
         except json.decoder.JSONDecodeError as e:
-            print(e)
-            logging.warning("JSON Decode Error.")
+            logging.warning("JSON Decode Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
         except KeyError as e:
-            print(e)
-            logging.warning("Key Error.")
+            logging.warning("Key Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
         except ApiNotExistError as e:
             logging.warning(e)
         except Exception as e:
-            logging.error("Unknown Error Occurred. ErrorInfo: {}".format(e))
+            logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
-            client_socket.sendto(b"Error.", addr)
-            logging.debug("Close connect to {}".format(addr))
-            client_socket.close()
+            server_socket.sendto(b"Error!", (addr, 50310))
+            logging.debug("Close connect to {}".format((addr, 50310)))
