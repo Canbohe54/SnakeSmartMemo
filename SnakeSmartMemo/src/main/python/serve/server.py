@@ -39,11 +39,11 @@ def start():
             result = control(api, data)
             server_socket.sendto(result.encode(), (addr, client_port))
 
-        except TypeError as e:
+        except TypeError:
             logging.warning("Type Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
-        except json.decoder.JSONDecodeError as e:
+        except json.decoder.JSONDecodeError:
             logging.warning("JSON Decode Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
-        except KeyError as e:
+        except KeyError:
             logging.warning("Key Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
         except ApiNotExistError as e:
             logging.warning(e)
