@@ -20,13 +20,23 @@
           </el-menu>
         </el-col>
       </el-row> -->
-      <el-row>
+      <!-- <el-row>
         <span class="logo"></span>
         <span class="title">蛇蛇智能备忘录</span>
         <el-tabs v-model="activeName" @tab-click="handleClick" class="navTabs">
         <el-tab-pane label="备忘录" name="notepad"></el-tab-pane>
-        <el-tab-pane label="登录/注册" name="login"></el-tab-pane>
-      </el-tabs>
+        <el-tab-pane :label=userName name="login"></el-tab-pane>
+        <el-tab-pane v-show="hasLogin" label="登出" name="logout"></el-tab-pane>
+        </el-tabs>
+      </el-row> -->
+      <el-row>
+        <span class="logo"></span>
+        <span class="title">蛇蛇智能备忘录</span>
+        <el-menu :default-active=activeName class="el-menu-demo" mode="horizontal" @select="handleSelect">
+          <el-menu-item index="notepad">备忘录</el-menu-item>
+          <el-menu-item index="login" :disabled=hasLogin>{{userName}}</el-menu-item>
+          <el-menu-item v-show="hasLogin" index="logout">登出</el-menu-item>
+        </el-menu>
       </el-row>
     </el-header>
     <el-main>
@@ -38,19 +48,53 @@
   export default {
     data() {
       return {
-        activeName: (this.$router.currentRoute.name=='login'?'login':'notepad')
+        userName: '登录/注册',
+        activeName: (this.$router.currentRoute.name=='login'?'login':'notepad'),
+        hasLogin: false
       };
     },
     methods: {
       handleClick(tab, event) {
         if(tab.name=="login"){
-          this.$router.push("/login");
+          if(!this.hasLogin){
+            this.$router.push("/login");
+          }
         }
         if(tab.name=="notepad"){
           this.$router.push("/");
         }
+        if(tab.name=="logout"){
+          this.$store.commit("REMOVE_INFO");
+          this.userName='登录/注册';
+          this.hasLogin = false;
+        }
+      },
+      handleSelect(key, keyPath){
+        console.log(key)
+        console.log(keyPath)
+        if(key=="login"){
+          if(!this.hasLogin){
+            this.$router.push("/login");
+          }
+          console.log(this.hasLogin)
+        }
+        if(key=="notepad"){
+          this.$router.push("/");
+        }
+        if(key=="logout"){
+          this.$store.commit("REMOVE_INFO");
+          this.userName='登录/注册';
+          this.hasLogin = false;
+        }
       }
-    }
+    },
+    updated(){
+        if(this.$store.getters.getUser.username){
+          this.userName=this.$store.getters.getUser.username;
+          this.hasLogin=true;
+          this.activeName=(this.$router.currentRoute.name=='login'?'login':'notepad')
+        }
+      }
   };
 </script>
 <style>
@@ -112,9 +156,19 @@ nav a.router-link-exact-active {
   padding: 10px 30px 50px;
   font: normal 400 18px/40px "Microsoft YaHei";
 }
-.navHeader .el-tabs__nav-wrap::after {
+
+.navHeader .el-menu {
+  float: right;
+  margin: 0 30px;
   background: none;
 }
+.navHeader .el-menu--horizontal>.el-menu-item {
+  padding: 10px 30px 50px;
+  font: normal 400 18px/40px "Microsoft YaHei";
+}
+/* .navHeader .el-menu--horizontal>.el-menu-item.is-active {
+  background: rgba(255, 255, 255, 0.5);
+} */
 /* .el-menu-demo {
   display: inline-block;
   height: max-content;
