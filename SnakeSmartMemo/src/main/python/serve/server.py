@@ -28,7 +28,6 @@ def start():
     while True:
         logging.debug("Accept to {}".format(addr))
         _dataGetRaw = server_socket.recvfrom(1024)[0].decode()
-        print(_dataGetRaw)
         try:
             _dataGet = json.loads(_dataGetRaw)
             _dataGetRaw = server_socket.recvfrom(_dataGet['len'])[0].decode()
