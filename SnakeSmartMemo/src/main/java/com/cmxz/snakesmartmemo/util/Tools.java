@@ -17,8 +17,6 @@ public class Tools {
             sock.connect(addr, 11451);
             String requestData = "{\"api\":\"" + comm + "\",\"data\":\"" + data + "\"}";
             String requestLen = "{\"len\":" + requestData.getBytes(StandardCharsets.UTF_8).length + "}";
-            System.out.println(requestLen);
-            System.out.println(requestData);
             DatagramPacket packet = new DatagramPacket(requestLen.getBytes(StandardCharsets.UTF_8),
                     requestLen.getBytes(StandardCharsets.UTF_8).length);
             sock.send(packet);

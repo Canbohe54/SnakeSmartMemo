@@ -11,7 +11,7 @@ def start():
     # 根据配置初始化
     conf = ConfParser()
     server_port = conf.getint("server", "ServerPort")
-    max_listen_num = conf.getint("server", "MaxListenNum")
+    client_port = conf.getint("client", "ClientPort")
 
     LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
     LOG_PATH = conf.get("logging", "LogFilePath")[1:-1]
@@ -23,7 +23,7 @@ def start():
     addr = socket.gethostname()
     server_socket.bind((addr, server_port))
 
-    print("Start to listen on port 11451...")
+    print(f"Start to listen on port {server_port}...")
 
     while True:
         logging.debug("Accept to {}".format(addr))
@@ -37,7 +37,7 @@ def start():
             data = _dataGet["data"]
             logging.debug("Get request data successful. Now start loop to controller.")
             result = control(api, data)
-            server_socket.sendto(result.encode(), (addr, 50310))
+            server_socket.sendto(result.encode(), (addr, client_port))
 
         except TypeError as e:
             logging.warning("Type Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
@@ -50,5 +50,5 @@ def start():
         except Exception as e:
             logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
-            server_socket.sendto(b"Error!", (addr, 50310))
-            logging.debug("Close connect to {}".format((addr, 50310)))
+            server_socket.sendto(b"Error!", (addr, client_port))
+            logging.debug("Close connect to {}".format((addr, client_port)))
