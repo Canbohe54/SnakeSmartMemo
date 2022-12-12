@@ -17,8 +17,6 @@ public class Tools {
             sock.connect(addr, 11451);
             String requestData = "{\"api\":\"" + comm + "\",\"data\":" + data + "}";
             String requestLen = "{\"len\":" + requestData.getBytes(StandardCharsets.UTF_8).length + "}";
-//            System.out.println(requestLen);
-//            System.out.println(requestData);
             DatagramPacket packet = new DatagramPacket(requestLen.getBytes(StandardCharsets.UTF_8),
                     requestLen.getBytes(StandardCharsets.UTF_8).length);
             sock.send(packet);
@@ -35,6 +33,6 @@ public class Tools {
     }
 
 //    public static void main(String[] args) throws Exception{
-//        System.out.println(CallPythonTools("time.parser", "[2015年10月3日去上学, {}]"));
+//        System.out.println(CallPythonTools("time.parser", "[\"2015年10月3日去上学\", {\"start_flag\":\"<S>\",\"end_flag\":\"</S>\"}]"));
 //    }
 }
