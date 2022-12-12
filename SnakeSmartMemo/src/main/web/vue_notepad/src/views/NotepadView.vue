@@ -4,10 +4,11 @@
     <el-container direction="vertical">
     <el-row class="tools">
       <el-button icon="el-icon-finished" @click="sidePaneVisual">{{openCloseSide}}事件列表</el-button>
+      <el-button icon="el-icon-document-checked" @click="log()">智能事件识别</el-button>
       <el-button icon="el-icon-microphone" @click="log()">语音输入</el-button>
       <el-button icon="el-icon-download" @click="log()">保存到本地</el-button>
-      <el-button icon="el-icon-document-checked" @click="log()">智能事件识别</el-button>
-      <el-button icon="el-icon-upload">上传到云端</el-button>
+      <el-button icon="el-icon-upload" :disabled=!hasLogin>上传到云端</el-button>
+      <el-button icon="el-icon-share" :disabled=!hasLogin>分享</el-button>
     </el-row>
     <!-- <el-button @click="formtoHtml">转换为Html样式</el-button> -->
     <div class="textEditor">
@@ -29,9 +30,10 @@ export default {
   components: {},
   data() {
     return {
+      hasLogin: false,
       openCloseSide:"关闭",
       ruleForm: {
-        content: "hello",
+        content: "哼，哼啊啊啊啊啊啊啊啊啊啊啊啊啊啊",
       },
     };
   },
@@ -58,6 +60,13 @@ export default {
       
     }
   },
+  created(){
+    if(this.$store.getters.getUser.username){
+          this.hasLogin=true;
+        }else{
+          this.hasLogin=false;
+        }
+  }
 };
 </script>
 <style>

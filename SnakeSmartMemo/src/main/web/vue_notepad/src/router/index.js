@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import NotepadView from '../views/NotepadView.vue'
+import LoadingView from '../views/LoadingView.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: RegisterView
+  },
+  {
+    path: '/loading',
+    name: 'loading',
+    component: LoadingView
   }
 ]
 

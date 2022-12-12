@@ -1,3 +1,9 @@
-2022-12-11 20:23:48.280 ----> [http-nio-9090-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 100 ms
-2022-12-11 22:19:42.729 ----> [Thread-1] ---> INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@b7838a9: startup date [Sun Dec 11 20:22:45 CST 2022]; root of context hierarchy
-2022-12-11 22:19:42.785 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans on shutdown
+2022-12-12 13:31:43.643 ----> [main] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Registering beans for JMX exposure on startup
+2022-12-12 13:31:43.653 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-9090"]
+2022-12-12 13:31:43.660 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler [http-nio-9090]
+2022-12-12 13:31:43.682 ----> [main] ---> INFO  org.apache.tomcat.util.net.NioSelectorPool - Using a shared selector for servlet write/read
+2022-12-12 13:31:43.693 ----> [main] ---> INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat started on port(s): 9090 (http)
+2022-12-12 13:31:43.697 ----> [main] ---> INFO  com.cmxz.snakesmartmemo.Starter - Started Starter in 1.871 seconds (JVM running for 2.351)
+2022-12-12 13:31:43.948 ----> [http-nio-9090-exec-1] ---> INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring FrameworkServlet 'dispatcherServlet'
+2022-12-12 13:31:43.948 ----> [http-nio-9090-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization started
+2022-12-12 13:31:43.963 ----> [http-nio-9090-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 15 ms

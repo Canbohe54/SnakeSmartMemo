@@ -35,7 +35,7 @@
         <el-menu :default-active=activeName class="el-menu-demo" mode="horizontal" @select="handleSelect">
           <el-menu-item index="notepad">备忘录</el-menu-item>
           <el-menu-item index="login" :disabled=hasLogin>{{userName}}</el-menu-item>
-          <el-menu-item v-show="hasLogin" index="logout">登出</el-menu-item>
+          <el-menu-item v-show="hasLogin" index="logout">退出</el-menu-item>
         </el-menu>
       </el-row>
     </el-header>
@@ -82,9 +82,25 @@
           this.$router.push("/");
         }
         if(key=="logout"){
+          this.$confirm('确定要退出账户吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '退出成功'
+          });
           this.$store.commit("REMOVE_INFO");
           this.userName='登录/注册';
           this.hasLogin = false;
+          this.$router.push("/loading");
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消退出'
+          });          
+        });
         }
       }
     },
@@ -92,8 +108,8 @@
         if(this.$store.getters.getUser.username){
           this.userName=this.$store.getters.getUser.username;
           this.hasLogin=true;
-          this.activeName=(this.$router.currentRoute.name=='login'?'login':'notepad')
         }
+        this.activeName=(this.$router.currentRoute.name=='login'?'login':'notepad')
       }
   };
 </script>
