@@ -53,6 +53,6 @@ public interface IdAndPasswordDao {
      * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
      */
     @Update("update id_and_passwords set token=#{token} where id=#{id}")
-    int updateToken(String id, String token);
+    int updateToken(@Param("id")String id, @Param("token")String token); //一定要记得@Param，不然找不到
 }
 

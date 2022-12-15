@@ -1,9 +1,8 @@
-2022-12-12 13:31:43.643 ----> [main] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Registering beans for JMX exposure on startup
-2022-12-12 13:31:43.653 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-9090"]
-2022-12-12 13:31:43.660 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler [http-nio-9090]
-2022-12-12 13:31:43.682 ----> [main] ---> INFO  org.apache.tomcat.util.net.NioSelectorPool - Using a shared selector for servlet write/read
-2022-12-12 13:31:43.693 ----> [main] ---> INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat started on port(s): 9090 (http)
-2022-12-12 13:31:43.697 ----> [main] ---> INFO  com.cmxz.snakesmartmemo.Starter - Started Starter in 1.871 seconds (JVM running for 2.351)
-2022-12-12 13:31:43.948 ----> [http-nio-9090-exec-1] ---> INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring FrameworkServlet 'dispatcherServlet'
-2022-12-12 13:31:43.948 ----> [http-nio-9090-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization started
-2022-12-12 13:31:43.963 ----> [http-nio-9090-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 15 ms
+2022-12-15 17:51:28.660 ----> [main] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Registering beans for JMX exposure on startup
+2022-12-15 17:51:28.675 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-19198"]
+2022-12-15 17:51:28.684 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler [http-nio-19198]
+2022-12-15 17:51:28.718 ----> [main] ---> INFO  org.apache.tomcat.util.net.NioSelectorPool - Using a shared selector for servlet write/read
+2022-12-15 17:51:28.741 ----> [main] ---> INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat started on port(s): 19198 (http)
+2022-12-15 17:51:28.745 ----> [main] ---> INFO  com.cmxz.snakesmartmemo.Starter - Started Starter in 2.429 seconds (JVM running for 2.714)
+2022-12-15 17:52:58.871 ----> [Thread-1] ---> INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3fed2870: startup date [Thu Dec 15 17:51:26 CST 2022]; root of context hierarchy
+2022-12-15 17:52:58.872 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans on shutdown
