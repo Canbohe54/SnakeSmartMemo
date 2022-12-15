@@ -1,10 +1,7 @@
 package com.cmxz.snakesmartmemo.dao;
 
 import com.cmxz.snakesmartmemo.pojo.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,6 +32,7 @@ public interface UserDao {
     @Select("select * from user_info where id = #{id}")
     User getUserInfoById(@Param("id") String id);
     int delete(User user);
+
     int update(User user);
 
 }

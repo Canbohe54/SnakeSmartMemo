@@ -8,3 +8,4 @@ db.properties
 *.log
 /src/main/python/resources/tk.py
 /src/main/python/logs/
+/src/main/web/package-lock.json

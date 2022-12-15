@@ -52,12 +52,23 @@ class UserServerImpl implements UserService {
 
     @Autowired
     private Tools tools;
+
+    String generateToken(String id, String userName) throws Exception {
+        //生成token,data:["{id}","{userName}"]
+        String data = "[\"" + id + "\",\"" + userName + "\"]";
+        return tools.CallPythonTools("token.generate", data);
+    }
+
+    boolean verifyToken(String token) throws Exception{
+        String data = "[\""+token+"\"]";
+        return "true".equals(tools.CallPythonTools("token.verification",data));
+    }
     public String echo(String id) {
         return id;
     }
 
     /**
-     * 注册
+     * 注册，后期密码可进行加密提高安全性
      *
      * @param id       唯一id（自动生成）
      * @param userName 用户名
@@ -80,15 +91,24 @@ class UserServerImpl implements UserService {
 
                 throw new RuntimeException();
             }
-            //将信息插入user_info，id_and_passwords表
+            //将信息插入user_info表
             userDao.insert(newUser);
+
+            //生成token,data:["{id}","{userName}"]
+            String token = generateToken(id,userName);
+            newIdAndPassword.setToken(token);
+
+            //将信息插入id_and_passwords表
             idAndPasswordDao.insert(newIdAndPassword);
             res.put("statusMsg", "success");
             res.put("userInfo", uExist);
+            res.put("token",token);
         } catch (NullOrEmptyIdException e) {
             res.put("statusMsg", "NullOrEmptyIdException");
         } catch (RuntimeException e) {
             res.put("statusMsg", "UserHasRegisterException");
+        } catch (Exception e) {
+            res.put("statusMsg", e.toString());
         }
         return res;
     }
@@ -105,13 +125,20 @@ class UserServerImpl implements UserService {
             if (IdAndPwd == null) {
                 throw new PasswdErrorException();
             }
+            //生成token,data:["{id}","{userName}"]
+            String token = generateToken(id,exist.getUsername());
+            idAndPasswordDao.updateToken(id,token);
+
             response.put("statusMsg", "success");
             response.put("userInfo", exist);
+            response.put("token",token);
         } catch (UserNotFoundException e) {
             response.put("statusMsg", "UserNotFoundException");
             response.put("userInfo", "");
         } catch (PasswdErrorException e) {
             response.put("statusMsg", "PasswdErrorException");
+        }catch (Exception e) {
+            response.put("statusMsg", e.toString());
         }
         return response;
 
@@ -166,6 +193,8 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "WriteFileException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
+        }catch (Exception e) {
+            response.put("statusMsg", e.toString());
         }
         return response;
     }
@@ -201,18 +230,21 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "CloudFileNotFoundException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
+        }catch (Exception e) {
+            response.put("statusMsg", e.toString());
         }
         return response;
     }
 
-    public boolean hasLogin(String id, String token) {
-        //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
+    public boolean hasLogin(String id, String token) throws Exception{
+        //获取token，token为空或前后端token不同为则过期
         IdAndPassword iAndP = idAndPasswordDao.getById(id);
         String serverToken = iAndP.getToken();
         if (serverToken == null || !serverToken.equals(token)) {
             return false;
         }
-        return true;
+        //token过期或无效则返回false，验证通过返回true
+        return verifyToken(token);
     }
 
     /**
@@ -227,10 +259,6 @@ class UserServerImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         String comm = "time.parser";
         try {
-            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
-            if (!hasLogin(id, token)) {
-                throw new TokenExpirationTimeException();
-            }
             //将前端发过来的文件转为File
             File f = new File(file.getOriginalFilename());
             BufferedOutputStream out = new BufferedOutputStream(
@@ -281,10 +309,6 @@ class UserServerImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         String comm = "recognition.NONE";
         try {
-            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
-            if (!hasLogin(id, token)) {
-                throw new TokenExpirationTimeException();
-            }
             //将前端发过来的文件转为File
             File f = new File(file.getOriginalFilename());
             BufferedOutputStream out = new BufferedOutputStream(
@@ -316,7 +340,7 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "FileNotFoundException");
         } catch (IOException e) {
             response.put("statusMsg", e.toString());
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("statusMsg", e.toString());
         }
 

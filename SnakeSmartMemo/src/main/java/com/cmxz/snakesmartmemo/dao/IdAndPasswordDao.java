@@ -2,10 +2,7 @@ package com.cmxz.snakesmartmemo.dao;
 
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,7 +27,7 @@ public interface IdAndPasswordDao {
     void insert(@Param("IdAndPwd") IdAndPassword IdAndPwd);
 
     /**
-     * 查询对应id、password的用户信息
+     * 查询对应id、password的用户信息，主要用于登录验证
      *
      * @param id
      * @param password
@@ -40,12 +37,22 @@ public interface IdAndPasswordDao {
     IdAndPassword getByIdAndPwd(@Param("id") String id, @Param("password") String password);
 
     /**
-     * 该方法主要用于检测token是否到期，此处token由于时间关系，仅进行简单模拟
+     * 获取id对应的用户密码和token信息
      *
-     * @param id
-     * @return
+     * @param id 用户id
+     * @return id对应的用户密码和token信息
      */
     @Select("select * from id_and_passwords where id=#{id}")
     IdAndPassword getById(String id);
+
+    /**
+     * 主要用于用户登录修改token
+     *
+     * @param id    用户id
+     * @param token 修改后token的值
+     * @return 匹配到的行数（如果想设置返回值是受影响的行数，修改数据库链接配置：增加 useAffectedRows=true 即可）
+     */
+    @Update("update id_and_passwords set token=#{token} where id=#{id}")
+    int updateToken(String id, String token);
 }
 
