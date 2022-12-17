@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container>
+    <el-container v-loading="loading" element-loading-text="正在注册">
       <el-header>
         <div class="snakelogo"></div>
         <div class="loginText">注册</div>
@@ -79,6 +79,7 @@ export default {
     };
 
     return {
+      loading: false,
       ruleForm: {
         id: "",
         username: "",
@@ -141,6 +142,7 @@ export default {
     //   this.$refs[formName].resetFields();
     // }
     submitForm() {
+      this.loading=true;
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           let id = this.ruleForm.id;
@@ -167,6 +169,7 @@ export default {
           });
         }
       });
+      this.loading=false;
     },
   },
 };
