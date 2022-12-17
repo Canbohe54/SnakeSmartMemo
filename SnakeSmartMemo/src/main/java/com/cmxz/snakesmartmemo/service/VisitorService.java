@@ -66,7 +66,7 @@ class VisitorServiceImpl implements VisitorService{
 
     public Map<String, Object> recognize(MultipartFile file){
         Map<String, Object> response = new HashMap<>();
-        String comm = "recognition.NONE";
+        String comm = "recognition";
         try {
             //将前端发过来的文件转为File
             File f = new File(file.getOriginalFilename());

@@ -162,7 +162,7 @@ export default {
       });
 
 
-      this.recorder.destroy();
+      //this.recorder.destroy();
       // const axios = require('axios')
       // axios.post(url, formData).then(res => {
       //   console.log(res.data.data[0].url)
