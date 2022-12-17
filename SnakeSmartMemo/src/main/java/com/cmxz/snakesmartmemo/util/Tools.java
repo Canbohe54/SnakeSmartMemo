@@ -32,7 +32,7 @@ public class Tools {
         return respText;
     }
 
-//    public static void main(String[] args) throws Exception{
-//        System.out.println(CallPythonTools("time.parser", "[\"2015年10月3日去上学\", {\"start_flag\":\"<S>\",\"end_flag\":\"</S>\"}]"));
-//    }
+    public static void main(String[] args) throws Exception {
+        System.out.println(CallPythonTools("token.verification", "[\"a.b.3\"]"));
+    }
 }
