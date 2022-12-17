@@ -33,6 +33,7 @@ public class Tools {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(CallPythonTools("token.verification", "[\"a.b.3\"]"));
+        String token = CallPythonTools("token.generate", "[\"114514\",\"Tiansuo Li\"]");
+        System.out.println(CallPythonTools("token.verification", "[\"" + token + "\"]"));
     }
 }

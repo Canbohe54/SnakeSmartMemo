@@ -24,18 +24,28 @@ def start():
     server_socket.bind((addr, server_port))
 
     print(f"Start to listen on port {server_port}...")
+    logging.info(f"Start to listen on port {server_port}...")
 
     while True:
-        logging.debug("Accept to {}".format(addr))
-        _dataGetRaw = server_socket.recvfrom(1024)[0].decode()
+        _dataGetRaw = None
         try:
+            _isGet = False
+            while not _isGet:
+                try:
+                    _isGet = True
+                    _dataGetRaw = server_socket.recvfrom(1024)[0].decode()
+                    logging.info("Accept to {}".format(addr))
+                except ConnectionError:
+                    _isGet = False
+            logging.debug(f"Get data: {_dataGetRaw}")
             _dataGet = json.loads(_dataGetRaw)
             _dataGetRaw = server_socket.recvfrom(_dataGet['len'])[0].decode()
+            logging.debug(f"Get data: {_dataGetRaw}")
             _dataGet = json.loads(_dataGetRaw)
-            logging.debug("Get requests from {}".format(addr))
+            logging.info("Get requests from {}".format(addr))
             api = _dataGet["api"]
             data = _dataGet["data"]
-            logging.debug("Get request data successful. Now start loop to controller.")
+            logging.info("Get request data successful. Now start loop to controller.")
             result = control(api, data)
             server_socket.sendto(result.encode(), (addr, client_port))
 
@@ -51,4 +61,4 @@ def start():
             logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
             server_socket.sendto(b"Error!", (addr, client_port))
-            logging.debug("Close connect to {}".format((addr, client_port)))
+            logging.info("Close connect to {}".format((addr, client_port)))

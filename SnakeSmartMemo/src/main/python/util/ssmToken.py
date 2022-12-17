@@ -22,7 +22,12 @@ def token_verification(_token):
     t = _token.split('.')
     h_s = t[0].encode()
     p_s = t[1].encode()
-    p_r = json.loads(base64.urlsafe_b64decode(p_s))
+    if len(p_s) % 4 == 0:
+        p_r = json.loads(base64.urlsafe_b64decode(p_s))
+    else:
+        str_res = p_s + (4 - len(p_s) % 4) * b"="
+        decode_res = base64.urlsafe_b64decode(str_res)
+        p_r = json.loads(decode_res)
     temp = h_s + b'.' + p_s
     temp_hash = hmac.new(b"ssm", temp, digestmod="SHA256")
     signature = base64.urlsafe_b64encode(temp_hash.digest()).replace(b'=', b'')
@@ -30,9 +35,10 @@ def token_verification(_token):
 
 
 if __name__ == '__main__':
-    print("id: 114514")
-    print("name: Tiansuo Li")
-    token = token_generate("114514", "Tiansuo Li")
-    print(token)
-    print(token_verification(token))
-    print(token_verification(token[:-1] + '0'))
+    # print("id: 114514")
+    # print("name: Tiansuo Li")
+    # token = token_generate("114514", "Tiansuo Li")
+    # print(token)
+    # print(token_verification(token))
+    # print(token_verification(token[:-1] + '0'))
+    print("abc" + 3 * '=')
