@@ -1,3 +1,7 @@
+import json
+import logging
+
+
 class ApiNotExistError(Exception):
     def __init__(self, apiName):
         if apiName is not None:
@@ -28,17 +32,23 @@ def control(_api, _data):
     _comm = _api.split('.')
     if _comm[0] == "token":
         if _comm[1] == "verification" and len(_comm) == 2:
+            logging.info("token.verification")
             from src.main.python.util.ssmToken import token_verification
             return str(token_verification(_data[0]))
         elif _comm[1] == "generate" and len(_comm) == 2:
+            logging.info("token.generate")
             from src.main.python.util.ssmToken import token_generate
             return token_generate(_data[0], _data[1])
     elif _comm[0] == "recognition":
         if len(_comm) == 1:
+            logging.info("recognition")
             from src.main.python.util.SentenceRecognize import recognize
-            return recognize(_data[0], _data[1])
+            _audio = open(_data[0], "rb").read()
+            _format = _data[0].split("\\")[-1].split('.')[-1]
+            return recognize(_audio, _format)
     elif _comm[0] == "time":
         if _comm[1] == "parser" and len(_comm) == 2:
+            logging.info("time.parser")
             from src.main.python.util.TimeParser import TimeParser
             TP = TimeParser(_data[0])
             return TP.parse_time(start_flag=_data[1].pop("start_flag", "<"),
@@ -46,3 +56,15 @@ def control(_api, _data):
                                  start_ignore_flag=_data[1].pop("start_ignore_flag", None),
                                  end_ignore_flag=_data[1].pop("end_ignore_flag", None))
     raise ApiNotExistError(_api)
+
+
+if __name__ == '__main__':
+    requestData = open(r"D:\Work\编程\pythonProject\postAPI\data\Log.txt", "rb").read()
+    print(requestData.decode())
+    print(control("recognize", json.loads(requestData, strict=False)))
+
+
+if __name__ == '__main__':
+    requestData = open(r"D:\Work\编程\pythonProject\postAPI\data\Log.txt", "rb").read()
+    print(requestData.decode())
+    print(control("recognize", json.loads(requestData, strict=False)))

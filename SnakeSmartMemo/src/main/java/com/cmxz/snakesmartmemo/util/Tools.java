@@ -10,7 +10,23 @@ import java.nio.charset.StandardCharsets;
 @Component
 @Mapper
 public class Tools {
+    /**
+     * 调用python工具
+     * @param comm 要调用的api名称
+     * @param data 调用api时传入的数据
+     * @return 调用api返回的结果
+     * @apiNote 形参comm与data格式:
+     * <p>comm format: [module].[function]
+     * <p>       module    ->    function
+     * <p>       token     ->  verification, generate
+     * <p>    recognition  ->
+     * <p>        time     ->    parser
+     * <p>
+     * <p>data format: "["(String)", ...]"
+     * <p>   --except: time.parser -> "["(String)", "{...}"]"
+     */
     public static String CallPythonTools(String comm, String data) throws Exception{
+        data = data.replace("\\", "\\\\");
         InetAddress addr = InetAddress.getLocalHost();
         String respText;
         try(DatagramSocket sock = new DatagramSocket(50310, addr)){
@@ -33,7 +49,11 @@ public class Tools {
     }
 
     public static void main(String[] args) throws Exception {
-        String token = CallPythonTools("token.generate", "[\"114514\",\"Tiansuo Li\"]");
-        System.out.println(CallPythonTools("token.verification", "[\"" + token + "\"]"));
+        String path = "C:\\Users\\11707\\Desktop\\audioData7.m4a";
+        String requestData = "[\"" + path + "\"]";
+        String recResult = CallPythonTools("recognition", requestData);
+        System.out.println(recResult);
+        String parResult = CallPythonTools("time.parser", "[\"" + recResult + "\",{}]");
+        System.out.println(parResult);
     }
 }

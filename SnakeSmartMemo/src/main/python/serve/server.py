@@ -4,7 +4,7 @@ import logging
 from time import strftime
 
 from src.main.python.util.ParseConfig import ConfParser
-from src.main.python.util.ApiController import control, ApiNotExistError
+from src.main.python.util.ApiController import control
 
 
 def start():
@@ -38,10 +38,10 @@ def start():
                 except ConnectionError:
                     _isGet = False
             logging.debug(f"Get data: {_dataGetRaw}")
-            _dataGet = json.loads(_dataGetRaw)
+            _dataGet = json.loads(_dataGetRaw, strict=False)
             _dataGetRaw = server_socket.recvfrom(_dataGet['len'])[0].decode()
             logging.debug(f"Get data: {_dataGetRaw}")
-            _dataGet = json.loads(_dataGetRaw)
+            _dataGet = json.loads(_dataGetRaw, strict=False)
             logging.info("Get requests from {}".format(addr))
             api = _dataGet["api"]
             data = _dataGet["data"]
@@ -49,14 +49,14 @@ def start():
             result = control(api, data)
             server_socket.sendto(result.encode(), (addr, client_port))
 
-        except TypeError:
-            logging.warning("Type Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
-        except json.decoder.JSONDecodeError:
-            logging.warning("JSON Decode Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
-        except KeyError:
-            logging.warning("Key Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
-        except ApiNotExistError as e:
-            logging.warning(e)
+        # except TypeError:
+        #     logging.warning("Type Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
+        # except json.decoder.JSONDecodeError:
+        #     logging.warning("JSON Decode Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
+        # except KeyError:
+        #     logging.warning("Key Error. Request from {}. RequestInfo: {}".format(addr, _dataGetRaw))
+        # except ApiNotExistError as e:
+        #     logging.warning(e)
         except Exception as e:
             logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
