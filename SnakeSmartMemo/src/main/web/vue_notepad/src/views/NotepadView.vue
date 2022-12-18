@@ -50,6 +50,8 @@
         :close-on-click-modal="false"
         @open="handleRecoderOpen()"
         @close="handleRecoderClose()"
+        v-loading="recogLoading"
+        element-loading-text="正在识别"
       >
         <el-button
           :icon="recoderStatsPic"
@@ -119,6 +121,7 @@ export default {
       recorderStats: "开始",
       recoderStatsPic: "el-icon-mic",
       recoded: false,
+      recogLoading:false,
       saveLocalVisible: false,
       ruleForm: {
         content: "",
@@ -207,6 +210,7 @@ export default {
         });
         return false;
       }
+      this.recogLoading = true;
       this.recorder.pause(); // 暂停录音
       this.timer = null;
       //console.log('上传录音')// 上传录音
@@ -222,10 +226,19 @@ export default {
       //注释内容：将录音保存到前端服务器上
       this.$axios.post("ssm/recognize", formData).then((resp) => {
         //console.log(resp);
+        this.recogLoading=false;
         if (resp.data.statusMsg == "success") {
           if (resp.data.events == "") {
             this.$message({
               message: "蛇蛇没听清呢，请再试一遍",
+              type: "error",
+            });
+            this.handleRecoderExit();
+            return;
+          }
+          if(resp.data.events=="$Error!$"){
+            this.$message({
+              message: "识别错误，请稍后再试",
               type: "error",
             });
             this.handleRecoderExit();
@@ -318,17 +331,22 @@ export default {
     },
     handleEventDealer() {
       this.loading = true;
-      const formData = new FormData();
-      const blob = this.ruleForm.content; // 获取html格式文本数据
-      // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
-      const newbolb = new Blob([blob], { type: "text/html" });
-      const fileOfBlob = new File([newbolb], new Date().getTime() + ".html");
-      formData.append("file", fileOfBlob);
-      let url = window.URL.createObjectURL(fileOfBlob);
-      this.$axios.post("ssm/event", formData).then((resp) => {
+      const params = new URLSearchParams();
+      params.append("text", this.ruleForm.content);
+      this.$axios.post("ssm/event", params).then((resp) => {
         console.log(resp.data);
       });
-      window.URL.revokeObjectURL(url);
+      // const formData = new FormData();
+      // const blob = this.ruleForm.content; // 获取html格式文本数据
+      // // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
+      // const newbolb = new Blob([blob], { type: "text/html" });
+      // const fileOfBlob = new File([newbolb], new Date().getTime() + ".html");
+      // formData.append("file", fileOfBlob);
+      // let url = window.URL.createObjectURL(fileOfBlob);
+      // this.$axios.post("ssm/event", formData).then((resp) => {
+      //   console.log(resp.data);
+      // });
+      // window.URL.revokeObjectURL(url);
       this.loading = false;
     },
   },

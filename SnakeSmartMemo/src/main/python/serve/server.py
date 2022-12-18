@@ -60,5 +60,5 @@ def start():
         except Exception as e:
             logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
-            server_socket.sendto(b"Error!", (addr, client_port))
+            server_socket.sendto(b"$Error!$", (addr, client_port))
             logging.info("Close connect to {}".format((addr, client_port)))

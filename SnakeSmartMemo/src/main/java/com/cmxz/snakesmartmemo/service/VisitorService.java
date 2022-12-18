@@ -83,7 +83,8 @@ class VisitorServiceImpl implements VisitorService{
 //            fis.close();
 
             //调用CallPythonTools处理
-            String events = tools.CallPythonTools(comm, f.getAbsolutePath());
+            String data = "[\"" + f.getAbsolutePath() + "\"]";
+            String events = tools.CallPythonTools(comm, data);
             response.put("statusMsg", "success");
             response.put("events", events);
 
