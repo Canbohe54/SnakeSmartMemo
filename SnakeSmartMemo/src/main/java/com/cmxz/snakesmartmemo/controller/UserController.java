@@ -49,9 +49,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "event",method = RequestMethod.POST)
-    public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
-        return userService.event(id,token,file);
-    }
+    public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("text")String text){
+        return userService.event(id,token,text);
+   }
+   //public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
+//        return userService.event(id,token,file);
+//    }
     @RequestMapping(value = "recognize",method = RequestMethod.POST)
     public Map<String,Object> recognize(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
         return userService.recognize(id,token,file);

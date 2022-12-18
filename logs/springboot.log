@@ -1,0 +1,8 @@
+2022-12-18 23:09:56.673 ----> [main] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Registering beans for JMX exposure on startup
+2022-12-18 23:09:56.690 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-19198"]
+2022-12-18 23:09:56.699 ----> [main] ---> INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler [http-nio-19198]
+2022-12-18 23:09:56.730 ----> [main] ---> INFO  org.apache.tomcat.util.net.NioSelectorPool - Using a shared selector for servlet write/read
+2022-12-18 23:09:56.746 ----> [main] ---> INFO  o.s.b.c.e.tomcat.TomcatEmbeddedServletContainer - Tomcat started on port(s): 19198 (http)
+2022-12-18 23:09:56.750 ----> [main] ---> INFO  com.cmxz.snakesmartmemo.Starter - Started Starter in 2.426 seconds (JVM running for 2.691)
+2022-12-18 23:10:01.842 ----> [Thread-1] ---> INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3fed2870: startup date [Sun Dec 18 23:09:54 CST 2022]; root of context hierarchy
+2022-12-18 23:10:01.843 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans on shutdown
