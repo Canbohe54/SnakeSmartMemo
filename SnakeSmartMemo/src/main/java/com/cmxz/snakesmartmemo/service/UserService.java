@@ -100,6 +100,8 @@ class UserServerImpl implements UserService {
 
             //将信息插入id_and_passwords表
             idAndPasswordDao.insert(newIdAndPassword);
+            //更新uExist信息
+            uExist = userDao.getUserInfoById(id);
             res.put("statusMsg", "success");
             res.put("userInfo", uExist);
             res.put("token",token);

@@ -6,7 +6,7 @@
         <el-button icon="el-icon-finished" @click="sidePaneVisual"
           >{{ openCloseSide }}事件列表</el-button
         >
-        <el-button icon="el-icon-document-checked" @click="log()"
+        <el-button icon="el-icon-document-checked" @click="handleEventDealer()"
           >智能事件识别</el-button
         >
         <el-button icon="el-icon-microphone" @click="recoderVisible = true"
@@ -91,6 +91,7 @@
             ><el-input
               class="saveDialogInput"
               v-model="saveLocalruleForm.localFileName"
+              auto-complete="off"
               placeholder="请输入文件名"
             ></el-input
           ></el-form-item>
@@ -297,6 +298,18 @@ export default {
             message: "已取消读取本地文件",
           });
         });
+    },handleEventDealer(){
+      this.loading = true;
+      const formData = new FormData();
+      const blob = this.ruleForm.content; // 获取html格式文本数据
+          // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
+      const newbolb = new Blob([blob], { type: "text/html" });
+      const fileOfBlob = new File([newbolb], new Date().getTime());
+      formData.append("file", fileOfBlob);
+      this.$axios.post("ssm/event", formData).then((resp) => {
+        console.log(resp.data);
+      });
+      this.loading = false;
     },
   },
   created() {

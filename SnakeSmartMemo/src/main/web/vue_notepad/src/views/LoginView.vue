@@ -99,7 +99,7 @@ export default {
                 type: "error",
               });
             }
-            console.log(resp);
+            //console.log(resp);
           });
         }
       });

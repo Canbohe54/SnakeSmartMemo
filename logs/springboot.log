@@ -1,1 +1,3 @@
-2022-12-18 00:47:47.233 ----> [http-nio-19198-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 22 ms
+2022-12-18 12:09:56.667 ----> [http-nio-19198-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 7 ms
+2022-12-18 12:10:48.959 ----> [Thread-1] ---> INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@53dacd14: startup date [Sun Dec 18 12:08:52 CST 2022]; root of context hierarchy
+2022-12-18 12:10:48.960 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans on shutdown

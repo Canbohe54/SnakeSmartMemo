@@ -153,19 +153,30 @@ export default {
           params.append("user_name", user_name);
           params.append("password", password);
           this.$axios.post("ssm/users/register", params).then((resp) => {
-            if (resp.data == "register successfully") {
+            if (resp.data.statusMsg == "success") {
               this.$message({
-                message: "注册成功",
+                message: "注册成功，正在自动登录",
                 type: "success",
               });
+              let token = resp.data.token;
+              let userInfo = resp.data.userInfo;
+              this.$store.commit("SET_TOKEN",token)
+              this.$store.commit("SET_USERINFO", userInfo)
               this.$refs.ruleForm.resetFields();
-              this.$router.push({ path: "/login" });
-            } else {
+              this.$router.push({ path: "/" });
+            }else if(resp.data.statusMsg == "UserHasRegisterException"){
+              this.$message({
+                message: "用户已存在",
+                type: "error",
+              });
+            }
+             else {
               this.$message({
                 message: "注册失败",
                 type: "error",
               });
             }
+            //console.log(resp);
           });
         }
       });
