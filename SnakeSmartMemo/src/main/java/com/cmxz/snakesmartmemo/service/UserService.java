@@ -271,9 +271,15 @@ class UserServerImpl implements UserService {
             out.flush();
             out.close();
 
+            //将File转化为字节数组
+            byte[] bytesArray = new byte[(int) f.length()];
+            FileInputStream fis = new FileInputStream(f);
+            fis.read(bytesArray); //read file into bytes[]
+            fis.close();
+
             //调用CallPythonTools处理
-            //String data = "[\"" + new String(bytesArray) + "\",{}]";
-            String events = tools.CallPythonTools(comm, f.getAbsolutePath());
+            String data = "[\"" + new String(bytesArray) + "\",{}]";
+            String events = tools.CallPythonTools(comm, data);
             response.put("statusMsg", "success");
             response.put("events", events);
 
@@ -316,15 +322,14 @@ class UserServerImpl implements UserService {
             out.close();
 
             //调用CallPythonTools处理
-//            String data = "[\"" + new String(bytesArray) + "\"]";
             String events = tools.CallPythonTools(comm, f.getAbsolutePath());
             response.put("statusMsg", "success");
             response.put("events", events);
 
             //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
-            //File tem = new File(f.toURI());
-//            if (!f.delete())
-//                System.out.println("删除失败");
+
+            if (!f.delete())
+                System.out.println("删除失败");
 
         } catch (TokenExpirationTimeException e) {
             throw new RuntimeException(e);
