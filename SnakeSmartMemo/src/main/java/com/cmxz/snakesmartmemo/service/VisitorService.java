@@ -41,8 +41,7 @@ class VisitorServiceImpl implements VisitorService{
             fis.close();
 
             //调用CallPythonTools处理
-            String data = "[\"" + new String(bytesArray) + "\",{}]";
-            String events = tools.CallPythonTools(comm, data);
+            String events = tools.CallPythonTools(comm, f.getAbsolutePath());
             response.put("statusMsg", "success");
             response.put("events", events);
 
@@ -66,7 +65,7 @@ class VisitorServiceImpl implements VisitorService{
 
     public Map<String, Object> recognize(MultipartFile file){
         Map<String, Object> response = new HashMap<>();
-        String comm = "recognition.NONE";
+        String comm = "recognition";
         try {
             //将前端发过来的文件转为File
             File f = new File(file.getOriginalFilename());
@@ -83,8 +82,7 @@ class VisitorServiceImpl implements VisitorService{
             fis.close();
 
             //调用CallPythonTools处理
-            String data = "[\"" + new String(bytesArray) + "\"]";
-            String events = tools.CallPythonTools(comm, data);
+            String events = tools.CallPythonTools(comm, f.getAbsolutePath());
             response.put("statusMsg", "success");
             response.put("events", events);
 

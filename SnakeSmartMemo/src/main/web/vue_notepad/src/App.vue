@@ -70,13 +70,13 @@
         }
       },
       handleSelect(key, keyPath){
-        console.log(key)
-        console.log(keyPath)
+        //console.log(key)
+        //console.log(keyPath)
         if(key=="login"){
           if(!this.hasLogin){
             this.$router.push("/login");
           }
-          console.log(this.hasLogin)
+          //console.log(this.hasLogin)
         }
         if(key=="notepad"){
           this.$router.push("/");

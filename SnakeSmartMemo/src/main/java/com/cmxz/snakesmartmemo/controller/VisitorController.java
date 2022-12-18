@@ -23,7 +23,7 @@ public class VisitorController {
         return re;
     }
 
-    @RequestMapping(value = "event")
+    @RequestMapping(value = "event",method = RequestMethod.POST)
     public Map<String, Object> event(@RequestParam("file") MultipartFile file) {
         return visitorService.event(file);
     }

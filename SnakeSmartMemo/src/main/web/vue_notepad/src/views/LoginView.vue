@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container>
+    <el-container v-loading="loading" element-loading-text="正在登录">
       <el-header>
         <div class="snakelogo"></div>
         <div class="loginText">登录</div>
@@ -51,6 +51,7 @@ export default {
   name: "Login",
   data() {
     return {
+      loading: false,
       ruleForm: {
         id: "",
         password: "",
@@ -71,6 +72,7 @@ export default {
   },
   methods: {
     submitForm() {
+      this.loading=true;
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           let id = this.ruleForm.id;
@@ -84,9 +86,9 @@ export default {
                 message: "登录成功",
                 type: "success",
               });
-              //token = resp.data.token;
+              let token = resp.data.token;
               let userInfo = resp.data.userInfo;
-              //this.$store.commit("SET_TOKEN",token)
+              this.$store.commit("SET_TOKEN",token)
               this.$store.commit("SET_USERINFO", userInfo)
               this.$router.push({
                 path: "/",
@@ -97,10 +99,11 @@ export default {
                 type: "error",
               });
             }
-            console.log(resp);
+            //console.log(resp);
           });
         }
       });
+      this.loading=false;
     },
     // submitForm(formName) {
     //   this.$refs[formName].validate((valid) => {
