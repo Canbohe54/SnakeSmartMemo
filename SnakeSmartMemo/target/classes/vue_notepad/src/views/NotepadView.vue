@@ -100,7 +100,6 @@
           >
         </el-form>
       </el-dialog>
-      <el-backtop></el-backtop>
     </el-container>
   </el-container>
 </template>
@@ -171,8 +170,8 @@ export default {
         this.recorderStats = "结束";
         this.recoderStatsPic = "el-icon-check";
         this.recorder = new Recorder({
-          sampleBits: 16, // 采样位数，支持 8 或 16，默认是16
-          sampleRate: 16000, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
+          sampleBits: 8, // 采样位数，支持 8 或 16，默认是16
+          sampleRate: 11025, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
           numChannels: 1, // 声道，支持 1 或 2， 默认是1
         });
         Recorder.getPermission().then(
@@ -221,24 +220,9 @@ export default {
       //this.src = url
       //注释内容：将录音保存到前端服务器上
       this.$axios.post("ssm/recognize", formData).then((resp) => {
-        //console.log(resp);
-        if (resp.data.statusMsg == "success") {
-          if (resp.data.events == "") {
-            this.$message({
-              message: "蛇蛇没听清呢，请再试一遍",
-              type: "error",
-            });
-            this.handleRecoderExit();
-            return;
-          }
-          this.ruleForm.content+= resp.data.events;
-          this.$message({
-            message: "转换成功",
-              type: "success",
-          });
-          this.handleRecoderExit();
-        }
+        console.log(resp);
       });
+
       //this.recorder.destroy();
       // const axios = require('axios')
       // axios.post(url, formData).then(res => {
@@ -250,7 +234,7 @@ export default {
       this.recoderVisible = false;
     },
     handleSaveLocalDialog() {
-      if (this.ruleForm.content == "" || this.ruleForm.content == "<br>") {
+      if (this.ruleForm.content == ""||this.ruleForm.content == "<br>") {
         this.$message({
           message: "没有编写内容，保存失败",
           type: "error",
@@ -315,12 +299,11 @@ export default {
             message: "已取消读取本地文件",
           });
         });
-    },
-    handleEventDealer() {
+    },handleEventDealer(){
       this.loading = true;
       const formData = new FormData();
       const blob = this.ruleForm.content; // 获取html格式文本数据
-      // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
+          // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
       const newbolb = new Blob([blob], { type: "text/html" });
       const fileOfBlob = new File([newbolb], new Date().getTime() + ".html");
       formData.append("file", fileOfBlob);
@@ -334,8 +317,8 @@ export default {
   },
   created() {
     this.recorder = new Recorder({
-      sampleBits: 16, // 采样位数，支持 8 或 16，默认是16
-      sampleRate: 16000, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
+      sampleBits: 8, // 采样位数，支持 8 或 16，默认是16
+      sampleRate: 11025, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
       numChannels: 1, // 声道，支持 1 或 2， 默认是1
     });
     if (this.$store.getters.getUser.username) {
