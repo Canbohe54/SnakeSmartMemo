@@ -8,6 +8,7 @@ import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
 import com.cmxz.snakesmartmemo.pojo.User;
 import com.cmxz.snakesmartmemo.util.QiniuKodoUtil;
 import com.cmxz.snakesmartmemo.util.Tools;
+import com.qiniu.storage.model.FileInfo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.nio.file.Path;
@@ -37,6 +38,7 @@ public interface UserService {
     Map<String, Object> event(String id, String token,String text);
 
     Map<String, Object> recognize(String id, String token, MultipartFile file);
+    Map<String, Object> fileInfoList(String id, String token);
 }
 
 @Service
@@ -241,6 +243,7 @@ class UserServerImpl implements UserService {
     public boolean hasLogin(String id, String token) throws Exception{
         //获取token，token为空或前后端token不同为则过期
         IdAndPassword iAndP = idAndPasswordDao.getById(id);
+        if(iAndP == null) return false;
         String serverToken = iAndP.getToken();
         if (serverToken == null || !serverToken.equals(token)) {
             return false;
@@ -341,6 +344,30 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", e.toString());
         }
 
+        return response;
+    }
+    public Map<String, Object> fileInfoList(String id, String token){
+        Map<String, Object> response = new HashMap<>();
+        ArrayList<FileInfo[]> fileInfos = new ArrayList<>();
+        try {
+            //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
+            if (!hasLogin(id, token)) {
+                throw new TokenExpirationTimeException();
+            }
+
+            fileInfos = qiniuKodoUtil.listSpaceFiles(id);
+
+            response.put("fileInfoList", fileInfos);
+            response.put("statusMsg", "success");
+        } catch (UnsupportedEncodingException e) {
+            response.put("statusMsg", "UnsupportedEncodingException");
+        } catch (FileNotFoundException e) {
+            response.put("statusMsg", "CloudFileNotFoundException");
+        } catch (TokenExpirationTimeException e) {
+            response.put("statusMsg", "TokenExpirationTimeException");
+        }catch (Exception e) {
+            response.put("statusMsg", e.toString());
+        }
         return response;
     }
 }
