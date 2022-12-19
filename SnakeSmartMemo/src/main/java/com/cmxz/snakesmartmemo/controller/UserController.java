@@ -59,4 +59,8 @@ public class UserController {
     public Map<String,Object> recognize(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
         return userService.recognize(id,token,file);
     }
+    @RequestMapping(value = "fileInfoList",method = RequestMethod.POST)
+    public Map<String,Object> FileInfoList(@RequestParam("id")String id,@RequestParam("token") String token){
+        return userService.fileInfoList(id,token);
+    }
 }
