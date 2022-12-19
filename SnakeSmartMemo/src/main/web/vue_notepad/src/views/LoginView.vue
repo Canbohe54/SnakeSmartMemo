@@ -95,7 +95,7 @@ export default {
               });
             } else {
               this.$message({
-                message: "登录失败",
+                message: "用户名或密码错误",
                 type: "error",
               });
             }

@@ -26,7 +26,10 @@
         <el-button icon="el-icon-paperclip" @click="log()" :disabled="!hasLogin"
           >从云端打开</el-button
         >
-        <el-button icon="el-icon-upload" :disabled="!hasLogin"
+        <el-button
+          icon="el-icon-upload"
+          :disabled="!hasLogin"
+          @click="handleUploadDialog()"
           >上传到云端</el-button
         >
         <el-button icon="el-icon-share" :disabled="!hasLogin">分享</el-button>
@@ -102,6 +105,33 @@
           >
         </el-form>
       </el-dialog>
+      <el-dialog
+        title="上传到云端"
+        :visible.sync="uploadVisible"
+        width="30%"
+        :modal="false"
+        :destroy-on-close="true"
+        :close-on-click-modal="false"
+      >
+        <el-form
+          :model="uploadruleForm"
+          :rules="uploadrules"
+          ref="uploadruleForm"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="" prop="uploadFileName"
+            ><el-input
+              class="saveDialogInput"
+              v-model="uploadruleForm.uploadFileName"
+              auto-complete="off"
+              placeholder="请输入文件名"
+            ></el-input
+          ></el-form-item>
+          <el-button icon="el-icon-upload2" @click="handleUpload()"
+            >上传</el-button
+          >
+        </el-form>
+      </el-dialog>
       <el-backtop></el-backtop>
     </el-container>
   </el-container>
@@ -121,8 +151,9 @@ export default {
       recorderStats: "开始",
       recoderStatsPic: "el-icon-mic",
       recoded: false,
-      recogLoading:false,
+      recogLoading: false,
       saveLocalVisible: false,
+      uploadVisible: false,
       ruleForm: {
         content: "",
       },
@@ -131,6 +162,15 @@ export default {
       },
       saveLocalrules: {
         localFileName: [
+          { required: true, message: "请输入文件名", trigger: "blur" },
+        ],
+      },
+      uploadruleForm: {
+        uploadFileName: "",
+        uploadFile: "",
+      },
+      uploadrules: {
+        uploadFileName: [
           { required: true, message: "请输入文件名", trigger: "blur" },
         ],
       },
@@ -226,7 +266,7 @@ export default {
       //注释内容：将录音保存到前端服务器上
       this.$axios.post("ssm/recognize", formData).then((resp) => {
         //console.log(resp);
-        this.recogLoading=false;
+        this.recogLoading = false;
         if (resp.data.statusMsg == "success") {
           if (resp.data.events == "") {
             this.$message({
@@ -236,7 +276,7 @@ export default {
             this.handleRecoderExit();
             return;
           }
-          if(resp.data.events=="$Error!$"){
+          if (resp.data.events == "$Error!$") {
             this.$message({
               message: "识别错误，请稍后再试",
               type: "error",
@@ -244,10 +284,10 @@ export default {
             this.handleRecoderExit();
             return;
           }
-          this.ruleForm.content+= resp.data.events;
+          this.ruleForm.content += resp.data.events;
           this.$message({
             message: "转换成功",
-              type: "success",
+            type: "success",
           });
           this.handleRecoderExit();
         }
@@ -275,7 +315,7 @@ export default {
     handleSaveLocal() {
       this.$refs.saveLocalruleForm.validate((valid) => {
         if (valid) {
-          console.log("valid");
+          //console.log("valid");
           let fileName = this.saveLocalruleForm.localFileName;
           const formData = new FormData();
           const blob = this.ruleForm.content; // 获取html格式文本数据
@@ -292,8 +332,13 @@ export default {
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
+          this.$message({
+            message: "已开始下载",
+            type: "success",
+          });
         }
       });
+      this.saveLocalVisible=false;
     },
     // handleChange(file, fileList) {
     //   let localFile = file;
@@ -303,7 +348,7 @@ export default {
     // },
     httpRequestLocalFile(data) {
       //console.log(data.file);
-      this.$confirm("此操作将覆盖原记事本数据, 是否继续?", "提示", {
+      this.$confirm("此操作将覆盖原记事本数据（真的很久）, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -348,6 +393,85 @@ export default {
       // });
       // window.URL.revokeObjectURL(url);
       this.loading = false;
+    },
+    handleUploadDialog() {
+      if (this.ruleForm.content == "" || this.ruleForm.content == "<br>") {
+        this.$message({
+          message: "没有编写内容，保存失败",
+          type: "error",
+        });
+        return;
+      }
+      this.uploadVisible = true;
+    },
+    handleUpload() {
+      let id = this.$store.getters.getUser.id;
+      let token = this.$store.getters.getToken;
+      this.$refs.uploadruleForm.validate((valid) => {
+        if (valid) {
+          //console.log("valid");
+          let fileName = this.uploadruleForm.uploadFileName;
+          const formData = new FormData();
+          this.uploadruleForm.uploadFile = this.ruleForm.content;//将要上传的保存起来
+          const blob = this.uploadruleForm.uploadFile; // 获取html格式文本数据
+          // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
+          const newbolb = new Blob([blob], { type: "text/html" });
+          const fileOfBlob = new File([newbolb], fileName + ".html");
+
+          // let url = window.URL.createObjectURL(fileOfBlob);
+          // let a = document.createElement("a");
+          // a.style.display = "none";
+          // a.href = url;
+          // a.download = fileOfBlob.name;
+          // document.body.appendChild(a);
+          // a.click();
+          // document.body.removeChild(a);
+          // window.URL.revokeObjectURL(url);
+          const params = new URLSearchParams();
+          formData.append("id", id);
+          formData.append("token", token);
+          formData.append("file", fileOfBlob);
+          formData.append("filename", fileName);
+          this.$axios.post("ssm/users/upload", formData).then((resp) => {
+            console.log(resp.data);
+            if (resp.data.statusMsg == "success") {
+              this.$message({
+                message: "上传成功",
+                type: "success",
+              });
+            } else {
+              this.$message({
+                message: "上传失败，请稍后再试",
+                type: "error",
+              });
+            }
+            
+          });
+        }
+      });
+      this.uploadVisible=false;
+    },
+    handleShare(){
+      if (this.ruleForm.content == "" || this.ruleForm.content == "<br>") {
+        this.$message({
+          message: "没有编写内容，保存失败",
+          type: "error",
+        });
+        return;
+      }
+      if(this.ruleForm.content != this.uploadruleForm.uploadFile){
+        this.$message({
+          message: "编写的内容发生改变，请重新上传！",
+          type: "error",
+        });
+        return;
+      }
+      let id = this.$store.getters.getUser.id;
+      let token = this.$store.getters.getToken;
+      const params =new URLSearchParams();
+      params.append("id",id);
+      params.append("token",token);
+      params.append("file_name",this.uploadruleForm.uploadFileName);
     },
   },
   created() {

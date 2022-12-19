@@ -2,7 +2,8 @@ import json
 import socket
 import logging
 from time import strftime
-
+import sys
+sys.path.append("../../../")
 from src.main.python.util.ParseConfig import ConfParser
 from src.main.python.util.ApiController import control
 

@@ -172,7 +172,7 @@ export default {
             }
              else {
               this.$message({
-                message: "注册失败",
+                message: "注册失败，请稍后再试",
                 type: "error",
               });
             }
