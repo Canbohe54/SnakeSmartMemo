@@ -1,3 +1,4 @@
-2022-12-19 00:08:59.383 ----> [http-nio-19198-exec-1] ---> INFO  org.springframework.web.servlet.DispatcherServlet - FrameworkServlet 'dispatcherServlet': initialization completed in 24 ms
-2022-12-19 00:38:08.465 ----> [Thread-1] ---> INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@53dacd14: startup date [Mon Dec 19 00:08:18 CST 2022]; root of context hierarchy
-2022-12-19 00:38:08.467 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans on shutdown
+2022-12-19 18:03:05.412 ----> [Thread-1] ---> INFO  o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext - Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@24111ef1: startup date [Mon Dec 19 18:02:28 CST 2022]; root of context hierarchy
+2022-12-19 18:03:05.413 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans on shutdown
+2022-12-19 18:03:05.413 ----> [Thread-1] ---> INFO  o.s.jmx.export.annotation.AnnotationMBeanExporter - Unregistering JMX-exposed beans
+2022-12-19 18:03:05.422 ----> [Thread-1] ---> INFO  com.alibaba.druid.pool.DruidDataSource - {dataSource-0} closing ...

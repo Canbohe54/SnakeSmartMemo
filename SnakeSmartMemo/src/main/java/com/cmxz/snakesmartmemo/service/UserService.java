@@ -254,7 +254,7 @@ class UserServerImpl implements UserService {
      *
      * @param id    用于查询服务器token
      * @param token token用于检测登录是否到期
-     * @param file  需要处理的笔记文件
+     * @param text  需要处理的笔记文件
      * @return
      */
     public Map<String, Object> event(String id, String token, String text) {
