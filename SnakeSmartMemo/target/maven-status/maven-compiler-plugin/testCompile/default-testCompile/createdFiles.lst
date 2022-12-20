@@ -1,0 +1,6 @@
+com\cmxz\snakesmartmemo\dao\IdAndPasswordDaoTest.class
+com\cmxz\snakesmartmemo\controller\UserControllerTest.class
+com\cmxz\snakesmartmemo\service\UserServerImplTest.class
+com\cmxz\snakesmartmemo\dao\UserDaoTest.class
+com\cmxz\snakesmartmemo\AppTest.class
+com\cmxz\snakesmartmemo\util\MybatisUtilsTest.class
