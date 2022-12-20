@@ -5,7 +5,24 @@
     :element-loading-text="publicLoadingText"
   >
     <el-container id="sidePane">
-      <el-empty class="empty"></el-empty>
+      <!-- <el-empty class="empty" v-show="isEventEmpty"></el-empty> -->
+      <el-table
+        :data="tableData"
+        stripe
+        style="width: 100%"
+        class="sidePaneTable"
+        empty-text="还未识别到事件哦"
+      >
+        <el-table-column prop="time" label="时间" min-width="60" align="center">
+        </el-table-column>
+        <el-table-column
+          prop="event"
+          label="事件"
+          min-width="80"
+          align="center"
+        >
+        </el-table-column>
+      </el-table>
     </el-container>
     <el-container direction="vertical">
       <el-row class="tools">
@@ -31,34 +48,34 @@
         >
         <el-button
           icon="el-icon-more"
-          @click="moreButton=(moreButton==true?false:true) "
-          ></el-button
-        >
+          @click="moreButton = moreButton == true ? false : true"
+        ></el-button>
       </el-row>
       <transition name="el-fade-in-linear">
-      <el-row class="tools" v-show="moreButton">
-        <el-button
-          icon="el-icon-link"
-          @click="openLinkVisible = true"
-          >从分享链接打开</el-button
-        >
-        <el-button
-          icon="el-icon-share"
-          :disabled="!hasLogin"
-          @click="handleShare()"
-          >分享</el-button
-        >
-        <el-button icon="el-icon-paperclip" @click="log()" :disabled="!hasLogin"
-          >从云端打开</el-button
-        >
-        <el-button
-          icon="el-icon-upload"
-          :disabled="!hasLogin"
-          @click="handleUploadDialog()"
-          >上传到云端</el-button
-        >
-      </el-row>
-    </transition>
+        <el-row class="tools" v-show="moreButton">
+          <el-button icon="el-icon-link" @click="openLinkVisible = true"
+            >从分享链接打开</el-button
+          >
+          <el-button
+            icon="el-icon-share"
+            :disabled="!hasLogin"
+            @click="handleShare()"
+            >分享</el-button
+          >
+          <el-button
+            icon="el-icon-paperclip"
+            @click="handleCloud()"
+            :disabled="!hasLogin"
+            >云储存空间</el-button
+          >
+          <el-button
+            icon="el-icon-upload"
+            :disabled="!hasLogin"
+            @click="handleUploadDialog()"
+            >上传到云端</el-button
+          >
+        </el-row>
+      </transition>
       <!-- <el-button @click="formtoHtml">转换为Html样式</el-button> -->
       <div class="textEditor">
         <vue-html5-editor
@@ -183,9 +200,7 @@
               placeholder="请粘贴或输入分享链接"
             ></el-input
           ></el-form-item>
-          <el-button icon="el-icon-connection" @click="handleOpenLink()"
-            >打开</el-button
-          >
+          <el-button @click="handleOpenLink()">打开</el-button>
         </el-form>
       </el-dialog>
       <el-dialog
@@ -207,6 +222,30 @@
           >复制分享链接</el-button
         >
       </el-dialog>
+      <el-dialog
+        title="云储存空间"
+        :visible.sync="cloudVisible"
+        width="30%"
+        :modal="false"
+        :destroy-on-close="true"
+        :close-on-click-modal="false"
+        v-loading="cloudLoading"
+        :element-loading-text=cloudLoadingText
+      >
+        <el-table
+          :data="fileInfotableData"
+          class="cloudTable"
+          style="width: 100%"
+          highlight-current-row
+          @current-change="handleCloudCurrentChange"
+          height="250"
+        >
+          <el-table-column prop="fileName" label="文件名" align="center">
+          </el-table-column>
+        </el-table>
+        <el-button @click="handleOpenCloudFile()">打开</el-button>
+        <el-button icon="el-icon-share" @click="handleCloudShare()">分享</el-button>
+      </el-dialog>
       <el-backtop></el-backtop>
     </el-container>
   </el-container>
@@ -219,7 +258,8 @@ export default {
   components: {},
   data() {
     return {
-      moreButton:false,
+      isEventEmpty: true,
+      moreButton: false,
       loading: false,
       hasLogin: false,
       openCloseSide: "关闭",
@@ -234,6 +274,9 @@ export default {
       uploadVisible: false,
       sharedVisible: false,
       openLinkVisible: false,
+      cloudVisible: false,
+      cloudLoading:false,
+      cloudLoadingText:"",
       publicLoadingText: "",
       ruleForm: {
         content: "",
@@ -264,6 +307,9 @@ export default {
         ],
       },
       shareLink: "",
+      tableData: [],
+      fileInfotableData: [],
+      currentCloudRow: {},
     };
   },
   methods: {
@@ -611,18 +657,18 @@ export default {
           this.sharedVisible = true;
           this.shareLink = resp.data.fileUrl;
         } else if (resp.data.statusMsg == "TokenExpirationTimeException") {
-              this.$message({
-                message: "用户身份过期，请重新登录！",
-                type: "error",
-              });
-              this.$store.commit("REMOVE_INFO");
-              this.$router.push("/loading");
-            } else {
-              this.$message({
-                message: "创建分享链接失败，请稍后再试",
-                type: "error",
-              });
-            }
+          this.$message({
+            message: "用户身份过期，请重新登录！",
+            type: "error",
+          });
+          this.$store.commit("REMOVE_INFO");
+          this.$router.push("/loading");
+        } else {
+          this.$message({
+            message: "创建分享链接失败，请稍后再试",
+            type: "error",
+          });
+        }
       });
     },
     handleCopyShareLink() {
@@ -652,13 +698,13 @@ export default {
                     this.ruleForm.content = resp.data;
                     this.$message({
                       type: "success",
-                      message: "读取分享文件成功！"
-                    })
-                  }else{
+                      message: "读取分享文件成功！",
+                    });
+                  } else {
                     this.$message({
-                type: "error",
-                message: "从分享链接打开失败，请稍后再试",
-              });
+                      type: "error",
+                      message: "从分享链接打开失败，请稍后再试",
+                    });
                   }
                 });
             })
@@ -668,9 +714,127 @@ export default {
                 message: "已取消从分享链接中打开",
               });
             });
-            this.openLinkVisible = false;
+          this.openLinkVisible = false;
         }
       });
+    },
+    handleCloud() {
+      this.loading = true;
+      this.publicLoadingText = "正在获取云储存";
+      let id = this.$store.getters.getUser.id;
+      let token = this.$store.getters.getToken;
+      let params = new URLSearchParams();
+      params.append("id", id);
+      params.append("token", token);
+      this.$axios.post("ssm/users/fileInfoList", params).then((resp) => {
+        if (resp.data.statusMsg == "success") {
+          //console.log(resp);
+          this.fileInfotableData = resp.data.fileInfoList;
+          this.cloudVisible = true;
+          this.currentCloudRow = {};
+        } else if (resp.data.statusMsg == "TokenExpirationTimeException") {
+          this.$message({
+            message: "用户身份过期，请重新登录！",
+            type: "error",
+          });
+          this.$store.commit("REMOVE_INFO");
+          this.$router.push("/loading");
+        } else {
+          this.$message({
+            message: "获取云储存失败，请稍后再试",
+            type: "error",
+          });
+        }
+      });
+      this.loading = false;
+      this.publicLoadingText = "";
+    },
+    handleCloudCurrentChange(val) {
+      this.currentCloudRow = val;
+    },
+    handleOpenCloudFile() {
+      if (this.currentCloudRow.fileUrl) {
+        this.$confirm(
+          "此操作将覆盖原记事本数据（真的很久）, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
+          .then(() => {
+            this.cloudLoading=true;
+            this.cloudLoadingText="正在打开云端文件"
+            this.$axios.post(this.currentCloudRow.fileUrl).then((resp) => {
+              if ((resp.statusText = "OK")) {
+                this.ruleForm.content = resp.data;
+                this.$message({
+                  type: "success",
+                  message: "读取云端文件成功！",
+                });
+                this.cloudLoading=false;
+                this.cloudLoadingText=""; 
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "从云端打开失败，请稍后再试",
+                });
+              }
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消从云端链接中打开",
+            });
+          });
+        this.cloudVisible = false;
+      } else {
+        this.$message({
+          type: "error",
+          message: "请选择文件",
+        });
+      }
+    },
+    handleCloudShare(){
+      if (this.currentCloudRow.fileUrl) {
+        this.cloudLoading=true;
+        this.cloudLoadingText="正在创建分享链接";
+        let id = this.$store.getters.getUser.id;
+      let token = this.$store.getters.getToken;
+      const params = new URLSearchParams();
+      params.append("id", id);
+      params.append("token", token);
+      params.append("file_name", this.currentCloudRow.fileName);
+      this.$axios.post("ssm/users/share", params).then((resp) => {
+        if (resp.data.statusMsg == "success") {
+          console.log(resp);
+          this.loading = false;
+          this.publicLoadingText = "";
+          this.sharedVisible = true;
+          this.shareLink = resp.data.fileUrl;
+        } else if (resp.data.statusMsg == "TokenExpirationTimeException") {
+          this.$message({
+            message: "用户身份过期，请重新登录！",
+            type: "error",
+          });
+          this.$store.commit("REMOVE_INFO");
+          this.$router.push("/loading");
+        } else {
+          this.$message({
+            message: "创建分享链接失败，请稍后再试",
+            type: "error",
+          });
+        }});
+        this.cloudLoading=false;
+        this.cloudLoadingText="";
+      } else {
+        this.$message({
+          type: "error",
+          message: "请选择文件",
+        });
+      }
     },
   },
   created() {
@@ -692,11 +856,29 @@ export default {
   margin: 0 0 20px 0;
 }
 #sidePane {
-  background-color: powderblue;
+  /* background-color: powderblue; */
   height: auto;
   margin: 0 10px 0 0;
-  border-radius: 5px;
+  max-width: 500px;
+  min-width: 250px;
+  /* border-style: solid;
+  border-color: #fff;
+  border-width: 10px 0 0 10px;
+  border-radius: 15px 15px 15px 15px; */
 }
+.sidePaneTable {
+  height: auto;
+  /* margin: 0 10px 10px 0; */
+  padding: 10px;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+}
+.cloudTable {
+  margin: 0 0 10px 0;
+}
+/* .el-table .el-table__cell {
+  text-align:center!important;
+} */
 /* .saveDialogTitle {
   font: 17px "Microsoft Yahei";
   margin: 0 0 20px 10px;
