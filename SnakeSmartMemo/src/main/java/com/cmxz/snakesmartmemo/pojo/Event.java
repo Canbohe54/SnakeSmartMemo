@@ -3,7 +3,7 @@ package com.cmxz.snakesmartmemo.pojo;
 import java.util.ArrayList;
 
 public class Event {
-    private ArrayList<Integer> time;
+    private ArrayList<Integer>time;
     private String event;
 
     public ArrayList<Integer> getTime() {
