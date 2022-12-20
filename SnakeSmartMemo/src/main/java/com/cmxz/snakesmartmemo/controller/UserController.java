@@ -67,8 +67,4 @@ public class UserController {
         return userService.fileInfoList(id, token);
     }
 
-    @RequestMapping(value = "eventList", method = RequestMethod.POST)
-    public Map<String, Object> eventList(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("text") String text) {
-        return userService.eventList(id,token, text);
-    }
 }

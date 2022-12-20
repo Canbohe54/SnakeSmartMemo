@@ -24,9 +24,6 @@ public class VisitorController {
     }
 
     @RequestMapping(value = "event",method = RequestMethod.POST)
-//    public Map<String, Object> event(@RequestParam("file") MultipartFile file) {
-//        return visitorService.event(file);
-//    }
     public Map<String, Object> event(@RequestParam("text") String text) {
         return visitorService.event(text);
     }
@@ -34,8 +31,5 @@ public class VisitorController {
     public Map<String,Object> recognize(@RequestParam("file")MultipartFile file){
         return visitorService.recognize(file);
     }
-    @RequestMapping(value = "eventList", method = RequestMethod.POST)
-    public Map<String, Object> eventList(@RequestParam("text") String text) {
-        return visitorService.eventList(text);
-    }
+
 }

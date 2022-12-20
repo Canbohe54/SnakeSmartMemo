@@ -26,6 +26,8 @@ import java.lang.RuntimeException;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static com.cmxz.snakesmartmemo.util.Tools.CallPythonTools;
+
 @Service
 public interface UserService {
     String echo(String id);
@@ -44,7 +46,6 @@ public interface UserService {
 
     Map<String, Object> fileInfoList(String id, String token);
 
-    Map<String, Object> eventList(String id, String token, String text);
 }
 
 @Service
@@ -267,32 +268,38 @@ class UserServerImpl implements UserService {
         Map<String, Object> response = new HashMap<>();
         String comm = "time.parser";
         try {
-            //将前端发过来的文件转为File
-//            File f = new File(file.getOriginalFilename());
-//            System.out.println(f.getName());
-//
-//            BufferedOutputStream out = new BufferedOutputStream(
-//                    new FileOutputStream(f));
-//            out.write(file.getBytes());
-//            out.flush();
-//            out.close();
-//
-//            //将File转化为字节数组
-//            byte[] bytesArray = new byte[(int) f.length()];
-//            FileInputStream fis = new FileInputStream(f);
-//            fis.read(bytesArray); //read file into bytes[]
-//            fis.close();
             byte[] bytesArray = text.getBytes();
             //调用CallPythonTools处理
             String data = "[\"" + new String(bytesArray) + "\",{\"start_flag\":\"<a herf='#events_%ID'>\",\"end_flag\":\"</a>\",\"autoincrement\":\"True\",\"start_id\":0}]";
-            String events = Tools.CallPythonTools(comm, data);
-            response.put("statusMsg", "success");
-            response.put("events", events);
+            String eventHeightLight = Tools.CallPythonTools(comm, data);
+            comm = "event.parser";
+            String events = CallPythonTools(comm, data);
+            System.out.println("event.parser "+events);
+            Gson gson = new Gson();
+            JsonParser parser = new JsonParser();
+            JsonArray Jarray = parser.parse(events).getAsJsonArray();
+            System.out.println(Jarray);
+            ArrayList<Event> resEvent = new ArrayList<>();
+            long eventId = 0;
+            for (JsonElement jsonElement : Jarray) {
 
-            //这时候，系统会在根目录下创建一个临时文件，这个临时文件并不是我们需要的，所以文件处理完成之后，需要将其删除。
-            //File tem = new File(f.toURI());
-//            if (!f.delete())
-//                System.out.println("删除失败");
+                JsonObject object = jsonElement.getAsJsonObject();
+                JsonArray timeArr = object.getAsJsonArray("time");
+                Event newEvent = new Event();
+                newEvent.setTime(new ArrayList<>());
+                newEvent.setEventId(eventId++);
+                for (JsonElement timeElement : timeArr) {
+                    newEvent.getTime().add(Integer.valueOf(timeElement.getAsString()));
+                }
+                newEvent.setEvent(object.get("event").getAsString());
+                resEvent.add(newEvent);
+            }
+
+            response.put("statusMsg", "success");
+            //处理好的文本
+            response.put("events", eventHeightLight);
+            //事件列表
+            response.put("eventList", resEvent);
 
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
@@ -393,49 +400,5 @@ class UserServerImpl implements UserService {
         return response;
     }
 
-    public Map<String, Object> eventList(String id, String token, String text) {
-        Map<String, Object> response = new HashMap<>();
-        String comm = "event.parser";
-        try {
-
-            byte[] bytesArray = text.getBytes();
-            //调用CallPythonTools处理
-            String data = "[\"" + new String(bytesArray) + "\",{}]";
-            String events = Tools.CallPythonTools(comm, data);
-            //[{"time":[2022,11,1,18,0],"event":" 吃饭 <TIME>11月2日<\\TIME>吃饭"}]
-            Gson gson = new Gson();
-            JsonParser parser = new JsonParser();
-            JsonArray Jarray = parser.parse(events).getAsJsonArray();
-            System.out.println(Jarray);
-            ArrayList<Event> resEvent = new ArrayList<>();
-            for (JsonElement jsonElement : Jarray) {
-
-                JsonObject object = jsonElement.getAsJsonObject();
-                JsonArray timeArr = object.getAsJsonArray("time");
-                Event newEvent = new Event();
-                newEvent.setTime(new ArrayList<>());
-                for (JsonElement timeElement : timeArr) {
-                    newEvent.getTime().add(Integer.valueOf(timeElement.getAsString()));
-                }
-                newEvent.setEvent(object.get("event").getAsString());
-                resEvent.add(newEvent);
-            }
-
-            response.put("statusMsg", "success");
-            response.put("events", resEvent);
-
-
-        } catch (TokenExpirationTimeException e) {
-            response.put("statusMsg", "TokenExpirationTimeException");
-        } catch (java.io.FileNotFoundException e) {
-            response.put("statusMsg", "FileNotFoundException");
-        } catch (IOException e) {
-            response.put("statusMsg", e.toString());
-        } catch (Exception e) {
-            response.put("statusMsg", e.toString());
-        }
-
-        return response;
-    }
 
 }
