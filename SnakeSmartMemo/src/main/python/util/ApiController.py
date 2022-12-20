@@ -51,16 +51,20 @@ def control(_api, _data):
             logging.info("time.parser")
             from src.main.python.util.TimeParser import TimeParser
             TP = TimeParser(_data[0], False)
-            return TP.parse_time(start_flag=_data[1].pop("start_flag", "<"),
-                                 end_flag=_data[1].pop("end_flag", ">"),
-                                 start_ignore_flag=_data[1].pop("start_ignore_flag", None),
-                                 end_ignore_flag=_data[1].pop("end_ignore_flag", None),
-                                 autoincrement=_data[1].pop("autoincrement", "False"),
-                                 start_id=_data[1].pop("start_id", 0))
+            res = TP.parse_time(start_flag=_data[1].pop("start_flag", "<"),
+                                end_flag=_data[1].pop("end_flag", ">"),
+                                start_ignore_flag=_data[1].pop("start_ignore_flag", None),
+                                end_ignore_flag=_data[1].pop("end_ignore_flag", None),
+                                autoincrement=_data[1].pop("autoincrement", "False"),
+                                start_id=_data[1].pop("start_id", 0))
+            del TP
+            return res
     elif _comm[0] == "event":
         if _comm[1] == "parser" and len(_comm) == 2:
             logging.info("event.parser")
             from src.main.python.util.EventParser import EventParser
             EP = EventParser(_data[0])
-            return EP.parse_event()
+            res = EP.parse_event()
+            del EP
+            return res
     raise ApiNotExistError(_api)

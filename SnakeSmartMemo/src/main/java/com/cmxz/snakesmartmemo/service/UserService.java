@@ -274,11 +274,9 @@ class UserServerImpl implements UserService {
             String eventHeightLight = Tools.CallPythonTools(comm, data);
             comm = "event.parser";
             String events = CallPythonTools(comm, data);
-            System.out.println("event.parser "+events);
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();
             JsonArray Jarray = parser.parse(events).getAsJsonArray();
-            System.out.println(Jarray);
             ArrayList<Event> resEvent = new ArrayList<>();
             long eventId = 0;
             for (JsonElement jsonElement : Jarray) {

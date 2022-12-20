@@ -50,6 +50,7 @@ def start():
             data = _dataGet["data"]
             logging.info("Get request data successful. Now start loop to controller.")
             result = control(api, data)
+            logging.info(result)
             server_socket.sendto(result.encode(), (addr, client_port))
 
         # except TypeError:

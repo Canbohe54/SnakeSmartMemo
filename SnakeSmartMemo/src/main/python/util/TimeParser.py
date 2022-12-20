@@ -17,6 +17,7 @@ class TimeParser:
         :type default_time: bool
         """
         self._string_contains_time = string_contains_time
+        self._time_list = []
         if default_time:
             self._default_time = [int(ti) for ti in time.strftime("%Y-%m-%d-18-00").split('-')]
         else:
@@ -214,3 +215,11 @@ class TimeParser:
             return False
         self._time_list.append(format_time_list)
         return True
+
+    @property
+    def time_list(self):
+        return self._time_list
+
+    @property
+    def string_contains_time(self):
+        return self._string_contains_time
