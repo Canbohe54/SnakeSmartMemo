@@ -4,13 +4,19 @@ import com.cmxz.snakesmartmemo.bean.exceptions.*;
 import com.cmxz.snakesmartmemo.bean.exceptions.FileNotFoundException;
 import com.cmxz.snakesmartmemo.dao.IdAndPasswordDao;
 import com.cmxz.snakesmartmemo.dao.UserDao;
+import com.cmxz.snakesmartmemo.pojo.Event;
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
 import com.cmxz.snakesmartmemo.pojo.SSMFileInfo;
 import com.cmxz.snakesmartmemo.pojo.User;
 import com.cmxz.snakesmartmemo.util.QiniuKodoUtil;
 import com.cmxz.snakesmartmemo.util.Tools;
+//import com.google.gson.JsonObject;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.gson.*;
 import com.qiniu.storage.model.FileInfo;
 import org.apache.ibatis.annotations.Mapper;
+
 
 import java.nio.file.Path;
 
@@ -40,6 +46,7 @@ public interface UserService {
 
     Map<String, Object> recognize(String id, String token, MultipartFile file);
     Map<String, Object> fileInfoList(String id, String token);
+    Map<String,Object> eventList(String id,String token,String text);
 }
 
 @Service
@@ -284,6 +291,7 @@ class UserServerImpl implements UserService {
             //调用CallPythonTools处理
             String data = "[\"" + new String(bytesArray) + "\",{}]";
             String events = tools.CallPythonTools(comm, data);
+            //JsonObject jsonEvents = JSONArray.parseArray(events);
             response.put("statusMsg", "success");
             response.put("events", events);
 
@@ -389,4 +397,50 @@ class UserServerImpl implements UserService {
         }
         return response;
     }
+    public Map<String,Object> eventList(String id,String token,String text){
+        Map<String, Object> response = new HashMap<>();
+        String comm = "event.parser";
+        try {
+
+            byte[] bytesArray = text.getBytes();
+            //调用CallPythonTools处理
+            String data = "[\"" + new String(bytesArray) + "\",{}]";
+            String events = tools.CallPythonTools(comm, data);
+            //[{"time":[2022,11,1,18,0],"event":" 吃饭 <TIME>11月2日<\\TIME>吃饭"}]
+            Gson gson = new Gson();
+            JsonParser parser = new JsonParser();
+            JsonArray Jarray = parser.parse(events).getAsJsonArray();
+            System.out.println(Jarray);
+            ArrayList<Event> resEvent  =new ArrayList<>();
+            for(JsonElement jsonElement : Jarray) {
+
+                JsonObject object = jsonElement.getAsJsonObject();
+                JsonArray timeArr = object.getAsJsonArray("time");
+                Event newEvent = new Event();
+                newEvent.setTime(new ArrayList<>());
+                for(JsonElement timeElement:timeArr){
+                    newEvent.getTime().add(Integer.valueOf(timeElement.getAsString()));
+                }
+                newEvent.setEvent(object.get("event").getAsString());
+                resEvent.add(newEvent);
+            }
+
+            response.put("statusMsg", "success");
+            response.put("events", resEvent);
+
+
+
+        } catch (TokenExpirationTimeException e) {
+            response.put("statusMsg", "TokenExpirationTimeException");
+        } catch (java.io.FileNotFoundException e) {
+            response.put("statusMsg", "FileNotFoundException");
+        } catch (IOException e) {
+            response.put("statusMsg", e.toString());
+        } catch (Exception e) {
+            response.put("statusMsg", e.toString());
+        }
+
+        return response;
+    }
+
 }

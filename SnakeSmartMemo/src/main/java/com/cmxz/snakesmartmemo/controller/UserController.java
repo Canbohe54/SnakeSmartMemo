@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.Map;
+
 @CrossOrigin
 @RestController
 @RequestMapping("ssm/users")
@@ -48,19 +49,26 @@ public class UserController {
         return userService.share(id, token, fileName);
     }
 
-    @RequestMapping(value = "event",method = RequestMethod.POST)
-    public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("text")String text){
-        return userService.event(id,token,text);
-   }
-   //public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
+    @RequestMapping(value = "event", method = RequestMethod.POST)
+    public Map<String, Object> event(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("text") String text) {
+        return userService.event(id, token, text);
+    }
+
+    //public Map<String,Object> event(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
 //        return userService.event(id,token,file);
 //    }
-    @RequestMapping(value = "recognize",method = RequestMethod.POST)
-    public Map<String,Object> recognize(@RequestParam("id")String id,@RequestParam("token") String token,@RequestParam("file")MultipartFile file){
-        return userService.recognize(id,token,file);
+    @RequestMapping(value = "recognize", method = RequestMethod.POST)
+    public Map<String, Object> recognize(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("file") MultipartFile file) {
+        return userService.recognize(id, token, file);
     }
-    @RequestMapping(value = "fileInfoList",method = RequestMethod.POST)
-    public Map<String,Object> FileInfoList(@RequestParam("id")String id,@RequestParam("token") String token){
-        return userService.fileInfoList(id,token);
+
+    @RequestMapping(value = "fileInfoList", method = RequestMethod.POST)
+    public Map<String, Object> FileInfoList(@RequestParam("id") String id, @RequestParam("token") String token) {
+        return userService.fileInfoList(id, token);
+    }
+
+    @RequestMapping(value = "eventList", method = RequestMethod.POST)
+    public Map<String, Object> eventList(@RequestParam("id") String id, @RequestParam("token") String token, @RequestParam("text") String text) {
+        return userService.eventList(id, token, text);
     }
 }
