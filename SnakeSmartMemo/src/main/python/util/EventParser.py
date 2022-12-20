@@ -1,3 +1,4 @@
+import json
 import re
 
 from src.main.python.util.TimeParser import TimeParser
@@ -14,4 +15,7 @@ class EventParser(TimeParser):
             index = s.find("<\\TIME>")
             if index != -1:
                 parse_res.append(s[index + len("<\\TIME>"):])
-        return str({"time": super()._time_list, "event": parse_res})
+        request_result = []
+        for i in range(len(parse_res)):
+            request_result.append({"time": self._time_list[i], "event": parse_res[i]})
+        return json.dumps({"events": request_result}, ensure_ascii=False)
