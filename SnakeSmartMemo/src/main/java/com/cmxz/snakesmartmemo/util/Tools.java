@@ -48,4 +48,8 @@ public class Tools {
         }
         return respText;
     }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println(CallPythonTools("event.parser", "[\"2022-12-24考大物期末，2022-12-25-9:00考Java期末，2022年12月26日14点30分考英语。\"]"));
+    }
 }
