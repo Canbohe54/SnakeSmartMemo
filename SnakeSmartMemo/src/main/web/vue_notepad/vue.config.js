@@ -4,7 +4,7 @@ module.exports = {
   runtimeCompiler: true,
   chainWebpack: config => {
     config
-      .plugin('ejs')
+      .plugin('html')
       .tap(args => {
         args[0].title= '蛇蛇智能备忘录'
         return args
