@@ -53,18 +53,15 @@ class UserServerImpl implements UserService {
     @Autowired
     private QiniuKodoUtil qiniuKodoUtil;
 
-    @Autowired
-    private Tools tools;
-
     String generateToken(String id, String userName) throws Exception {
         //生成token,data:["{id}","{userName}"]
         String data = "[\"" + id + "\",\"" + userName + "\"]";
-        return tools.CallPythonTools("token.generate", data);
+        return Tools.CallPythonTools("token.generate", data);
     }
 
     boolean verifyToken(String token) throws Exception{
         String data = "[\""+token+"\"]";
-        return "True".equals(tools.CallPythonTools("token.verification",data));
+        return "True".equals(Tools.CallPythonTools("token.verification",data));
     }
     public String echo(String id) {
         return id;
@@ -259,7 +256,7 @@ class UserServerImpl implements UserService {
      * @param id    用于查询服务器token
      * @param token token用于检测登录是否到期
      * @param text  需要处理的笔记文件
-     * @return
+     * @return 返回生成事件的哈希表
      */
     public Map<String, Object> event(String id, String token, String text) {
         Map<String, Object> response = new HashMap<>();
@@ -282,8 +279,8 @@ class UserServerImpl implements UserService {
 //            fis.close();
             byte[] bytesArray = text.getBytes();
             //调用CallPythonTools处理
-            String data = "[\"" + new String(bytesArray) + "\",{}]";
-            String events = tools.CallPythonTools(comm, data);
+            String data = "[\"" + new String(bytesArray) + "\",{\"start_flag\":\"<a herf='#events'>\",\"end_flag\":\"</a>\"}]";
+            String events = Tools.CallPythonTools(comm, data);
             response.put("statusMsg", "success");
             response.put("events", events);
 
@@ -326,7 +323,7 @@ class UserServerImpl implements UserService {
             out.close();
 
             //调用CallPythonTools处理
-            String events = tools.CallPythonTools(comm, f.getAbsolutePath());
+            String events = Tools.CallPythonTools(comm, f.getAbsolutePath());
             response.put("statusMsg", "success");
             response.put("events", events);
 
