@@ -5,6 +5,7 @@ import com.cmxz.snakesmartmemo.bean.exceptions.FileNotFoundException;
 import com.cmxz.snakesmartmemo.dao.IdAndPasswordDao;
 import com.cmxz.snakesmartmemo.dao.UserDao;
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
+import com.cmxz.snakesmartmemo.pojo.SSMFileInfo;
 import com.cmxz.snakesmartmemo.pojo.User;
 import com.cmxz.snakesmartmemo.util.QiniuKodoUtil;
 import com.cmxz.snakesmartmemo.util.Tools;
@@ -63,7 +64,7 @@ class UserServerImpl implements UserService {
 
     boolean verifyToken(String token) throws Exception{
         String data = "[\""+token+"\"]";
-        return "true".equals(tools.CallPythonTools("token.verification",data));
+        return "True".equals(tools.CallPythonTools("token.verification",data));
     }
     public String echo(String id) {
         return id;
@@ -349,6 +350,8 @@ class UserServerImpl implements UserService {
     public Map<String, Object> fileInfoList(String id, String token){
         Map<String, Object> response = new HashMap<>();
         ArrayList<FileInfo[]> fileInfos = new ArrayList<>();
+        String fileKey;
+        ArrayList<SSMFileInfo> ssmFileInfos =new ArrayList<>();
         try {
             //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
             if (!hasLogin(id, token)) {
@@ -356,8 +359,24 @@ class UserServerImpl implements UserService {
             }
 
             fileInfos = qiniuKodoUtil.listSpaceFiles(id);
+            for (FileInfo[] items : fileInfos) {
+                for (FileInfo item : items) {
+                    fileKey = item.key;
+                    String[] subKey = fileKey.split("/");
+                    if(subKey.length<3){
+                        throw new Exception("fileUrlAnalysisException");
+                    }
+                    SSMFileInfo ssmFileInfo = new SSMFileInfo();
+                    ssmFileInfo.setFileName(subKey[2]);
 
-            response.put("fileInfoList", fileInfos);
+                    String encodedFileName = URLEncoder.encode(subKey[2], "utf-8").replace("+", "%20");
+                    String finalUrl = String.format("%s/notes/%s/%s", "http://" + qiniuKodoUtil.getDomain(), id, encodedFileName);
+                    ssmFileInfo.setFileUrl(finalUrl);
+                    ssmFileInfos.add(ssmFileInfo);
+                }
+            }
+
+            response.put("fileInfoList", ssmFileInfos);
             response.put("statusMsg", "success");
         } catch (UnsupportedEncodingException e) {
             response.put("statusMsg", "UnsupportedEncodingException");
