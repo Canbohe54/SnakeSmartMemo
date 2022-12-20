@@ -10,15 +10,11 @@ import com.cmxz.snakesmartmemo.pojo.SSMFileInfo;
 import com.cmxz.snakesmartmemo.pojo.User;
 import com.cmxz.snakesmartmemo.util.QiniuKodoUtil;
 import com.cmxz.snakesmartmemo.util.Tools;
-//import com.google.gson.JsonObject;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.gson.*;
 import com.qiniu.storage.model.FileInfo;
 import org.apache.ibatis.annotations.Mapper;
 
-
-import java.nio.file.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -187,7 +183,6 @@ class UserServerImpl implements UserService {
             out.write(file.getBytes());
             out.flush();
             out.close();
-
 
             qiniuKodoUtil.upload(f, "notes/" + id + "/" + filename);
 
@@ -406,7 +401,7 @@ class UserServerImpl implements UserService {
             byte[] bytesArray = text.getBytes();
             //调用CallPythonTools处理
             String data = "[\"" + new String(bytesArray) + "\",{}]";
-            String events = tools.CallPythonTools(comm, data);
+            String events = Tools.CallPythonTools(comm, data);
             //[{"time":[2022,11,1,18,0],"event":" 吃饭 <TIME>11月2日<\\TIME>吃饭"}]
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();
