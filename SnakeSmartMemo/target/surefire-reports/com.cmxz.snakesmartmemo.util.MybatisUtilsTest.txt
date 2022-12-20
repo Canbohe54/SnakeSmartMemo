@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: com.cmxz.snakesmartmemo.util.MybatisUtilsTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in com.cmxz.snakesmartmemo.util.MybatisUtilsTest
+testIdAndPasswordList(com.cmxz.snakesmartmemo.util.MybatisUtilsTest)  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoClassDefFoundError: Could not initialize class com.cmxz.snakesmartmemo.util.MybatisUtils
+	at com.cmxz.snakesmartmemo.util.MybatisUtilsTest.testIdAndPasswordList(MybatisUtilsTest.java:31)
+
+testGetUserInfoList(com.cmxz.snakesmartmemo.util.MybatisUtilsTest)  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoClassDefFoundError: Could not initialize class com.cmxz.snakesmartmemo.util.MybatisUtils
+	at com.cmxz.snakesmartmemo.util.MybatisUtilsTest.testGetUserInfoList(MybatisUtilsTest.java:17)
+

@@ -6,6 +6,7 @@
         <webroots />
         <sourceRoots>
           <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/main/python/resources" />
           <root url="file://$MODULE_DIR$/src/main/resources" />
         </sourceRoots>
       </configuration>
@@ -18,7 +19,7 @@
       </configuration>
     </facet>
     <facet type="Python" name="Python">
-      <configuration sdkName="Python 3.10 (Python)" />
+      <configuration sdkName="" />
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
