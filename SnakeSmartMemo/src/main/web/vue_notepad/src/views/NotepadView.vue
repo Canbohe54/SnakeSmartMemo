@@ -4,7 +4,11 @@
     v-loading="loading"
     :element-loading-text="publicLoadingText"
   >
-    <el-container id="sidePane">
+    <el-container id="sidePane" direction="vertical">
+        <el-switch
+  active-text="显示详细时间" v-model="showDetailTime" style="padding: 10px 0 20px 0;"
+  ></el-switch>
+      
       <!-- <el-empty class="empty" v-show="isEventEmpty"></el-empty> -->
       <el-table
         :data="tableData"
@@ -13,7 +17,8 @@
         class="sidePaneTable"
         empty-text="还未识别到事件哦"
       >
-        <el-table-column prop="time" label="时间" min-width="60" align="center">
+      <el-table-column prop="date" label="日期" min-width="50" align="center"></el-table-column>
+        <el-table-column prop="time" label="时间" min-width="20" align="center" v-if="showDetailTime">
         </el-table-column>
         <el-table-column
           prop="event"
@@ -307,6 +312,7 @@ export default {
         ],
       },
       shareLink: "",
+      showDetailTime:false,
       tableData: [],
       fileInfotableData: [],
       currentCloudRow: {},
@@ -544,7 +550,22 @@ export default {
       const params = new URLSearchParams();
       params.append("text", this.ruleForm.content);
       this.$axios.post("ssm/event", params).then((resp) => {
-        console.log(resp.data);
+        console.log(resp.data.eventList);
+        if(resp.data.statusMsg=="success"){
+            this.tableData=[];
+            let resTable = resp.data.eventList;
+            for(let row of resTable){
+              let temp = {id:"",date:"",time:"",event:""};
+              temp.id=row.eventId;
+              let time = row.time;
+              temp.date=row.time[0]+"年"+time[1]+"月"+time[2]+"日";
+              temp.time=row.time[3]+" : "+row.time[4];
+              temp.event=row.event;
+              console.log(temp);
+              this.tableData.push(temp);
+            }
+            this.content = resp.data.events;
+        }
       });
       // const formData = new FormData();
       // const blob = this.ruleForm.content; // 获取html格式文本数据
