@@ -1,6 +1,12 @@
 <template>
-  <el-container direction="horizonal" v-loading="loading">
-    <el-container id="sidePane"></el-container>
+  <el-container
+    direction="horizonal"
+    v-loading="loading"
+    :element-loading-text="publicLoadingText"
+  >
+    <el-container id="sidePane">
+      <el-empty class="empty"></el-empty>
+    </el-container>
     <el-container direction="vertical">
       <el-row class="tools">
         <el-button icon="el-icon-finished" @click="sidePaneVisual"
@@ -23,6 +29,25 @@
         <el-button icon="el-icon-download" @click="handleSaveLocalDialog()"
           >保存到本地</el-button
         >
+        <el-button
+          icon="el-icon-more"
+          @click="moreButton=(moreButton==true?false:true) "
+          ></el-button
+        >
+      </el-row>
+      <transition name="el-fade-in-linear">
+      <el-row class="tools" v-show="moreButton">
+        <el-button
+          icon="el-icon-link"
+          @click="openLinkVisible = true"
+          >从分享链接打开</el-button
+        >
+        <el-button
+          icon="el-icon-share"
+          :disabled="!hasLogin"
+          @click="handleShare()"
+          >分享</el-button
+        >
         <el-button icon="el-icon-paperclip" @click="log()" :disabled="!hasLogin"
           >从云端打开</el-button
         >
@@ -32,8 +57,8 @@
           @click="handleUploadDialog()"
           >上传到云端</el-button
         >
-        <el-button icon="el-icon-share" :disabled="!hasLogin">分享</el-button>
       </el-row>
+    </transition>
       <!-- <el-button @click="formtoHtml">转换为Html样式</el-button> -->
       <div class="textEditor">
         <vue-html5-editor
@@ -112,6 +137,8 @@
         :modal="false"
         :destroy-on-close="true"
         :close-on-click-modal="false"
+        v-loading="uploadLoading"
+        element-loading-text="正在上传"
       >
         <el-form
           :model="uploadruleForm"
@@ -132,6 +159,54 @@
           >
         </el-form>
       </el-dialog>
+      <el-dialog
+        title="从分享链接中打开"
+        :visible.sync="openLinkVisible"
+        width="30%"
+        :modal="false"
+        :destroy-on-close="true"
+        :close-on-click-modal="false"
+        v-loading="openLinkLoading"
+        element-loading-text="正在同步内容"
+      >
+        <el-form
+          :model="openLinkruleForm"
+          :rules="openLinkrules"
+          ref="openLinkruleForm"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="" prop="openLinkFileName"
+            ><el-input
+              class="saveDialogInput"
+              v-model="openLinkruleForm.openLinkFileName"
+              auto-complete="off"
+              placeholder="请粘贴或输入分享链接"
+            ></el-input
+          ></el-form-item>
+          <el-button icon="el-icon-connection" @click="handleOpenLink()"
+            >打开</el-button
+          >
+        </el-form>
+      </el-dialog>
+      <el-dialog
+        title="分享成功"
+        :visible.sync="sharedVisible"
+        width="30%"
+        :modal="false"
+        :destroy-on-close="true"
+        :close-on-click-modal="false"
+      >
+        <el-input
+          class="saveDialogInput"
+          v-model="shareLink"
+          auto-complete="off"
+        >
+          <template slot="prepend">分享地址:</template>
+        </el-input>
+        <el-button icon="el-icon-copy-document" @click="handleCopyShareLink()"
+          >复制分享链接</el-button
+        >
+      </el-dialog>
       <el-backtop></el-backtop>
     </el-container>
   </el-container>
@@ -144,6 +219,7 @@ export default {
   components: {},
   data() {
     return {
+      moreButton:false,
       loading: false,
       hasLogin: false,
       openCloseSide: "关闭",
@@ -152,8 +228,13 @@ export default {
       recoderStatsPic: "el-icon-mic",
       recoded: false,
       recogLoading: false,
+      uploadLoading: false,
+      openLinkLoading: false,
       saveLocalVisible: false,
       uploadVisible: false,
+      sharedVisible: false,
+      openLinkVisible: false,
+      publicLoadingText: "",
       ruleForm: {
         content: "",
       },
@@ -174,6 +255,15 @@ export default {
           { required: true, message: "请输入文件名", trigger: "blur" },
         ],
       },
+      openLinkruleForm: {
+        openLinkFileName: "",
+      },
+      openLinkrules: {
+        openLinkFileName: [
+          { required: true, message: "请输入分享链接", trigger: "blur" },
+        ],
+      },
+      shareLink: "",
     };
   },
   methods: {
@@ -186,6 +276,32 @@ export default {
     },
     formtoHtml() {
       document.execCommand(""); //改进之处：可以转换为html文档
+    },
+    // 点击复制到剪贴板函数
+    copyToClipboard(content) {
+      //window.clipboardData的作用是在页面上将需要的东西复制到剪贴板上，
+      //提供了对于预定义的剪贴板格式的访问，以便在编辑操作中使用。
+      if (window.clipboardData) {
+        /*
+          window.clipboardData有三个方法:
+        （1）clearData(sDataFormat) 删除剪贴板中指定格式的数据。sDataFormat:"text","url"
+        （2）getData(sDataFormat) 从剪贴板获取指定格式的数据。 sDataFormat:"text","url"
+        （3）setData(sDataFormat, sData) 给剪贴板赋予指定格式的数据。返回 true 表示操作成功。
+          */
+        window.clipboardData.setData("text", content);
+      } else {
+        (function (content) {
+          //oncopy 事件在用户拷贝元素上的内容时触发。
+          document.oncopy = function (e) {
+            e.clipboardData.setData("text", content);
+            e.preventDefault(); //取消事件的默认动作
+            document.oncopy = null;
+          };
+        })(content);
+        //execCommand方法是执行一个对当前文档/当前选择/给出范围的命令。
+        //'Copy':将当前选中区复制到剪贴板。
+        document.execCommand("Copy");
+      }
     },
     sidePaneVisual() {
       //开启/关闭侧边栏
@@ -338,7 +454,7 @@ export default {
           });
         }
       });
-      this.saveLocalVisible=false;
+      this.saveLocalVisible = false;
     },
     // handleChange(file, fileList) {
     //   let localFile = file;
@@ -355,6 +471,7 @@ export default {
       })
         .then(() => {
           this.loading = true;
+          this.publicLoadingText = "正在读取本地文件";
           let reader = new FileReader();
           const theThis = this;
           reader.readAsText(data.file);
@@ -362,6 +479,7 @@ export default {
             theThis.ruleForm.content = this.result;
           };
           this.loading = false;
+          this.publicLoadingText = "";
           this.$message({
             type: "success",
             message: "读取本地文件成功!",
@@ -376,6 +494,7 @@ export default {
     },
     handleEventDealer() {
       this.loading = true;
+      this.publicLoadingText = "正在识别";
       const params = new URLSearchParams();
       params.append("text", this.ruleForm.content);
       this.$axios.post("ssm/event", params).then((resp) => {
@@ -393,11 +512,12 @@ export default {
       // });
       // window.URL.revokeObjectURL(url);
       this.loading = false;
+      this.publicLoadingText = "";
     },
     handleUploadDialog() {
       if (this.ruleForm.content == "" || this.ruleForm.content == "<br>") {
         this.$message({
-          message: "没有编写内容，保存失败",
+          message: "没有编写内容，上传失败",
           type: "error",
         });
         return;
@@ -405,6 +525,7 @@ export default {
       this.uploadVisible = true;
     },
     handleUpload() {
+      this.uploadLoading = true;
       let id = this.$store.getters.getUser.id;
       let token = this.$store.getters.getToken;
       this.$refs.uploadruleForm.validate((valid) => {
@@ -412,7 +533,7 @@ export default {
           //console.log("valid");
           let fileName = this.uploadruleForm.uploadFileName;
           const formData = new FormData();
-          this.uploadruleForm.uploadFile = this.ruleForm.content;//将要上传的保存起来
+          this.uploadruleForm.uploadFile = this.ruleForm.content; //将要上传的保存起来
           const blob = this.uploadruleForm.uploadFile; // 获取html格式文本数据
           // 此处获取到blob对象后需要设置fileName满足当前项目上传需求，其它项目可直接传把blob作为file塞入formData
           const newbolb = new Blob([blob], { type: "text/html" });
@@ -431,47 +552,125 @@ export default {
           formData.append("id", id);
           formData.append("token", token);
           formData.append("file", fileOfBlob);
-          formData.append("filename", fileName);
+          formData.append("filename", fileName + ".html");
           this.$axios.post("ssm/users/upload", formData).then((resp) => {
-            console.log(resp.data);
+            //console.log(resp.data);
             if (resp.data.statusMsg == "success") {
               this.$message({
                 message: "上传成功",
                 type: "success",
               });
+            } else if (resp.data.statusMsg == "TokenExpirationTimeException") {
+              this.$message({
+                message: "用户身份过期，请重新登录！",
+                type: "error",
+              });
+              this.$store.commit("REMOVE_INFO");
+              this.$router.push("/loading");
             } else {
+              //console.log(resp);
               this.$message({
                 message: "上传失败，请稍后再试",
                 type: "error",
               });
             }
-            
           });
         }
       });
-      this.uploadVisible=false;
+      this.uploadLoading = false;
+      this.uploadVisible = false;
     },
-    handleShare(){
+    handleShare() {
       if (this.ruleForm.content == "" || this.ruleForm.content == "<br>") {
         this.$message({
-          message: "没有编写内容，保存失败",
+          message: "没有编写内容，分享失败",
           type: "error",
         });
         return;
       }
-      if(this.ruleForm.content != this.uploadruleForm.uploadFile){
+      if (this.ruleForm.content != this.uploadruleForm.uploadFile) {
         this.$message({
           message: "编写的内容发生改变，请重新上传！",
           type: "error",
         });
         return;
       }
+      this.loading = true;
+      this.publicLoadingText = "正在创建分享链接";
       let id = this.$store.getters.getUser.id;
       let token = this.$store.getters.getToken;
-      const params =new URLSearchParams();
-      params.append("id",id);
-      params.append("token",token);
-      params.append("file_name",this.uploadruleForm.uploadFileName);
+      const params = new URLSearchParams();
+      params.append("id", id);
+      params.append("token", token);
+      params.append("file_name", this.uploadruleForm.uploadFileName + ".html");
+      this.$axios.post("ssm/users/share", params).then((resp) => {
+        if (resp.data.statusMsg == "success") {
+          console.log(resp);
+          this.loading = false;
+          this.publicLoadingText = "";
+          this.sharedVisible = true;
+          this.shareLink = resp.data.fileUrl;
+        } else if (resp.data.statusMsg == "TokenExpirationTimeException") {
+              this.$message({
+                message: "用户身份过期，请重新登录！",
+                type: "error",
+              });
+              this.$store.commit("REMOVE_INFO");
+              this.$router.push("/loading");
+            } else {
+              this.$message({
+                message: "创建分享链接失败，请稍后再试",
+                type: "error",
+              });
+            }
+      });
+    },
+    handleCopyShareLink() {
+      this.copyToClipboard(this.shareLink);
+      this.$message({
+        message: "复制成功！",
+        type: "success",
+      });
+    },
+    handleOpenLink() {
+      this.$refs.openLinkruleForm.validate((valid) => {
+        if (valid) {
+          this.$confirm(
+            "此操作将覆盖原记事本数据（真的很久）, 是否继续?",
+            "提示",
+            {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning",
+            }
+          )
+            .then(() => {
+              this.$axios
+                .post(this.openLinkruleForm.openLinkFileName)
+                .then((resp) => {
+                  if ((resp.statusText = "OK")) {
+                    this.ruleForm.content = resp.data;
+                    this.$message({
+                      type: "success",
+                      message: "读取分享文件成功！"
+                    })
+                  }else{
+                    this.$message({
+                type: "error",
+                message: "从分享链接打开失败，请稍后再试",
+              });
+                  }
+                });
+            })
+            .catch(() => {
+              this.$message({
+                type: "info",
+                message: "已取消从分享链接中打开",
+              });
+            });
+            this.openLinkVisible = false;
+        }
+      });
     },
   },
   created() {
@@ -508,5 +707,8 @@ export default {
 .openLocal {
   display: inline;
   margin: 0 10px;
+}
+.empty {
+  margin: auto;
 }
 </style>

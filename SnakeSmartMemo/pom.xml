@@ -18,6 +18,8 @@
 		<java.version>17</java.version>
 <!--		<start-class>com.cmxz.snakesmartmemo.Starterrter</start-class>-->
 	</properties>
+	<!--string类型转化成json数组并输出-->
+
 
 	<dependencies>
 <!--		<dependency>-->

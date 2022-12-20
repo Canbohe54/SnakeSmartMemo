@@ -4,13 +4,19 @@ import com.cmxz.snakesmartmemo.bean.exceptions.*;
 import com.cmxz.snakesmartmemo.bean.exceptions.FileNotFoundException;
 import com.cmxz.snakesmartmemo.dao.IdAndPasswordDao;
 import com.cmxz.snakesmartmemo.dao.UserDao;
+import com.cmxz.snakesmartmemo.pojo.Event;
 import com.cmxz.snakesmartmemo.pojo.IdAndPassword;
 import com.cmxz.snakesmartmemo.pojo.SSMFileInfo;
 import com.cmxz.snakesmartmemo.pojo.User;
 import com.cmxz.snakesmartmemo.util.QiniuKodoUtil;
 import com.cmxz.snakesmartmemo.util.Tools;
+//import com.google.gson.JsonObject;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.gson.*;
 import com.qiniu.storage.model.FileInfo;
 import org.apache.ibatis.annotations.Mapper;
+
 
 import java.nio.file.Path;
 
@@ -36,10 +42,13 @@ public interface UserService {
 
     Map<String, Object> share(String id, String token, String filename);
 
-    Map<String, Object> event(String id, String token,String text);
+    Map<String, Object> event(String id, String token, String text);
 
     Map<String, Object> recognize(String id, String token, MultipartFile file);
+
     Map<String, Object> fileInfoList(String id, String token);
+
+    Map<String, Object> eventList(String id, String token, String text);
 }
 
 @Service
@@ -63,6 +72,7 @@ class UserServerImpl implements UserService {
         String data = "[\""+token+"\"]";
         return "True".equals(Tools.CallPythonTools("token.verification",data));
     }
+
     public String echo(String id) {
         return id;
     }
@@ -95,7 +105,7 @@ class UserServerImpl implements UserService {
             userDao.insert(newUser);
 
             //生成token,data:["{id}","{userName}"]
-            String token = generateToken(id,userName);
+            String token = generateToken(id, userName);
             newIdAndPassword.setToken(token);
 
             //将信息插入id_and_passwords表
@@ -104,7 +114,7 @@ class UserServerImpl implements UserService {
             uExist = userDao.getUserInfoById(id);
             res.put("statusMsg", "success");
             res.put("userInfo", uExist);
-            res.put("token",token);
+            res.put("token", token);
         } catch (NullOrEmptyIdException e) {
             res.put("statusMsg", "NullOrEmptyIdException");
         } catch (RuntimeException e) {
@@ -128,18 +138,18 @@ class UserServerImpl implements UserService {
                 throw new PasswdErrorException();
             }
             //生成token,data:["{id}","{userName}"]
-            String token = generateToken(id,exist.getUsername());
-            idAndPasswordDao.updateToken(id,token);
+            String token = generateToken(id, exist.getUsername());
+            idAndPasswordDao.updateToken(id, token);
 
             response.put("statusMsg", "success");
             response.put("userInfo", exist);
-            response.put("token",token);
+            response.put("token", token);
         } catch (UserNotFoundException e) {
             response.put("statusMsg", "UserNotFoundException");
             response.put("userInfo", "");
         } catch (PasswdErrorException e) {
             response.put("statusMsg", "PasswdErrorException");
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("statusMsg", e.toString());
         }
         return response;
@@ -195,7 +205,7 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "WriteFileException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("statusMsg", e.toString());
         }
         return response;
@@ -232,16 +242,16 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "CloudFileNotFoundException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("statusMsg", e.toString());
         }
         return response;
     }
 
-    public boolean hasLogin(String id, String token) throws Exception{
+    public boolean hasLogin(String id, String token) throws Exception {
         //获取token，token为空或前后端token不同为则过期
         IdAndPassword iAndP = idAndPasswordDao.getById(id);
-        if(iAndP == null) return false;
+        if (iAndP == null) return false;
         String serverToken = iAndP.getToken();
         if (serverToken == null || !serverToken.equals(token)) {
             return false;
@@ -344,11 +354,12 @@ class UserServerImpl implements UserService {
 
         return response;
     }
-    public Map<String, Object> fileInfoList(String id, String token){
+
+    public Map<String, Object> fileInfoList(String id, String token) {
         Map<String, Object> response = new HashMap<>();
         ArrayList<FileInfo[]> fileInfos = new ArrayList<>();
         String fileKey;
-        ArrayList<SSMFileInfo> ssmFileInfos =new ArrayList<>();
+        ArrayList<SSMFileInfo> ssmFileInfos = new ArrayList<>();
         try {
             //获取token，token为空或前后端token不同为则过期，后期可完善token的相关业务逻辑
             if (!hasLogin(id, token)) {
@@ -360,7 +371,7 @@ class UserServerImpl implements UserService {
                 for (FileInfo item : items) {
                     fileKey = item.key;
                     String[] subKey = fileKey.split("/");
-                    if(subKey.length<3){
+                    if (subKey.length < 3) {
                         throw new Exception("fileUrlAnalysisException");
                     }
                     SSMFileInfo ssmFileInfo = new SSMFileInfo();
@@ -381,9 +392,55 @@ class UserServerImpl implements UserService {
             response.put("statusMsg", "CloudFileNotFoundException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.put("statusMsg", e.toString());
         }
         return response;
     }
+
+    public Map<String, Object> eventList(String id, String token, String text) {
+        Map<String, Object> response = new HashMap<>();
+        String comm = "event.parser";
+        try {
+
+            byte[] bytesArray = text.getBytes();
+            //调用CallPythonTools处理
+            String data = "[\"" + new String(bytesArray) + "\",{}]";
+            String events = tools.CallPythonTools(comm, data);
+            //[{"time":[2022,11,1,18,0],"event":" 吃饭 <TIME>11月2日<\\TIME>吃饭"}]
+            Gson gson = new Gson();
+            JsonParser parser = new JsonParser();
+            JsonArray Jarray = parser.parse(events).getAsJsonArray();
+            System.out.println(Jarray);
+            ArrayList<Event> resEvent = new ArrayList<>();
+            for (JsonElement jsonElement : Jarray) {
+
+                JsonObject object = jsonElement.getAsJsonObject();
+                JsonArray timeArr = object.getAsJsonArray("time");
+                Event newEvent = new Event();
+                newEvent.setTime(new ArrayList<>());
+                for (JsonElement timeElement : timeArr) {
+                    newEvent.getTime().add(Integer.valueOf(timeElement.getAsString()));
+                }
+                newEvent.setEvent(object.get("event").getAsString());
+                resEvent.add(newEvent);
+            }
+
+            response.put("statusMsg", "success");
+            response.put("events", resEvent);
+
+
+        } catch (TokenExpirationTimeException e) {
+            response.put("statusMsg", "TokenExpirationTimeException");
+        } catch (java.io.FileNotFoundException e) {
+            response.put("statusMsg", "FileNotFoundException");
+        } catch (IOException e) {
+            response.put("statusMsg", e.toString());
+        } catch (Exception e) {
+            response.put("statusMsg", e.toString());
+        }
+
+        return response;
+    }
+
 }
