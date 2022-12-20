@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: com.cmxz.snakesmartmemo.dao.UserDaoTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in com.cmxz.snakesmartmemo.dao.UserDaoTest
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in com.cmxz.snakesmartmemo.dao.UserDaoTest
 testGetUserInfoList(com.cmxz.snakesmartmemo.dao.UserDaoTest)  Time elapsed: 0 s  <<< ERROR!
 java.lang.NoClassDefFoundError: Could not initialize class com.cmxz.snakesmartmemo.util.MybatisUtils
 	at com.cmxz.snakesmartmemo.dao.UserDaoTest.testGetUserInfoList(UserDaoTest.java:16)
@@ -10,7 +10,7 @@ testGetUserInfo(com.cmxz.snakesmartmemo.dao.UserDaoTest)  Time elapsed: 0 s  <<<
 java.lang.NoClassDefFoundError: Could not initialize class com.cmxz.snakesmartmemo.util.MybatisUtils
 	at com.cmxz.snakesmartmemo.dao.UserDaoTest.testGetUserInfo(UserDaoTest.java:29)
 
-testInsert(com.cmxz.snakesmartmemo.dao.UserDaoTest)  Time elapsed: 0 s  <<< ERROR!
+testInsert(com.cmxz.snakesmartmemo.dao.UserDaoTest)  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.NoClassDefFoundError: Could not initialize class com.cmxz.snakesmartmemo.util.MybatisUtils
 	at com.cmxz.snakesmartmemo.dao.UserDaoTest.testInsert(UserDaoTest.java:41)
 
