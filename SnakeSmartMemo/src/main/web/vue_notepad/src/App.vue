@@ -105,9 +105,12 @@
       }
     },
     updated(){
-        if(this.$store.getters.getUser.username){
+        if(this.$store.getters.getToken){
           this.userName=this.$store.getters.getUser.username;
           this.hasLogin=true;
+        }else{
+          this.userName='登录/注册';
+          this.hasLogin=false;
         }
         this.activeName=(this.$router.currentRoute.name=='login'?'login':'notepad')
       }
