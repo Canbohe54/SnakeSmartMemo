@@ -175,7 +175,7 @@ class UserServerImpl implements UserService {
             }
             //判断文件是否为空
             if (file.isEmpty()) {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("FileEmptyException");
             }
             File f = new File(file.getOriginalFilename());
             BufferedOutputStream out = new BufferedOutputStream(
@@ -195,9 +195,12 @@ class UserServerImpl implements UserService {
 
         } catch (UserNotFoundException e) {
             response.put("statusMsg", "UserNotFoundException");
-        } catch (FileNotFoundException | java.io.FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             response.put("statusMsg", "FileNotFoundException");
-        } catch (IOException e) {
+        }catch (java.io.FileNotFoundException e){
+            response.put("statusMsg","WriteFileNotFoundException");
+        }
+        catch (IOException e) {
             response.put("statusMsg", "WriteFileException");
         } catch (TokenExpirationTimeException e) {
             response.put("statusMsg", "TokenExpirationTimeException");

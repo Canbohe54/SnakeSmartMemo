@@ -41,7 +41,7 @@ class VisitorServiceImpl implements VisitorService{
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();
             JsonArray Jarray = parser.parse(events).getAsJsonArray();
-            System.out.println(Jarray);
+            //System.out.println(Jarray);
             ArrayList<Event> resEvent = new ArrayList<>();
             long eventId = 0;
             for (JsonElement jsonElement : Jarray) {

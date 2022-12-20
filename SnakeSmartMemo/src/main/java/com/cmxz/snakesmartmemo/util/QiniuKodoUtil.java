@@ -8,6 +8,7 @@ import com.qiniu.storage.model.BatchStatus;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.storage.model.FileInfo;
 import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -112,7 +113,10 @@ public class QiniuKodoUtil {
         //String[] strings = localFilePath.split("\\\\");
         //String key = strings[strings.length - 1];
         Auth auth = Auth.create(accessKey, secretKey);
-        String upToken = auth.uploadToken(bucket);
+        StringMap strMap = new StringMap();
+        strMap.put("insertOnly", 0);
+        //strMap.put("isPrefixalScope",1);
+        String upToken = auth.uploadToken(bucket,fileName,3600,strMap);
         try {
             Response response = uploadManager.put(file, fileName, upToken);
             //解析上传成功的结果
