@@ -93,17 +93,21 @@ export default {
               this.$router.push({
                 path: "/",
               });
+              this.loading=false;
             } else {
               this.$message({
                 message: "用户名或密码错误",
                 type: "error",
               });
+              this.loading=false;
             }
             //console.log(resp);
           });
+        }else{
+          this.loading=false;
         }
       });
-      this.loading=false;
+      
     },
     // submitForm(formName) {
     //   this.$refs[formName].validate((valid) => {

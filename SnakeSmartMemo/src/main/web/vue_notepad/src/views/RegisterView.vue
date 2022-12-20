@@ -164,23 +164,27 @@ export default {
               this.$store.commit("SET_USERINFO", userInfo)
               this.$refs.ruleForm.resetFields();
               this.$router.push({ path: "/" });
+              this.loading=false;
             }else if(resp.data.statusMsg == "UserHasRegisterException"){
               this.$message({
                 message: "用户已存在",
                 type: "error",
               });
+              this.loading=false;
             }
              else {
               this.$message({
                 message: "注册失败，请稍后再试",
                 type: "error",
               });
+              this.loading=false;
             }
             //console.log(resp);
           });
+        }else{
+          this.loading=false;
         }
       });
-      this.loading=false;
     },
   },
 };
