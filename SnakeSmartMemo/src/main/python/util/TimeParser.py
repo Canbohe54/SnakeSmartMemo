@@ -4,6 +4,9 @@ from functools import partial
 
 
 class TimeParser:
+    _string_contains_time = ""
+    _time_list = []
+
     def __init__(self, string_contains_time, default_time=True):
         """
         ------------------------------------
@@ -14,9 +17,9 @@ class TimeParser:
         """
         self.__string_contains_time = string_contains_time
         if default_time:
-            self.__default_time = [int(ti) for ti in time.strftime("%Y-%m-%d-18-00").split('-')]
+            self._default_time = [int(ti) for ti in time.strftime("%Y-%m-%d-18-00").split('-')]
         else:
-            self.__default_time = [0, 0, 0, 0, 0]
+            self._default_time = [0, 0, 0, 0, 0]
 
     def set_string(self, new_string_contains_time):
         self.__string_contains_time = new_string_contains_time
@@ -116,7 +119,7 @@ class TimeParser:
             return matched_time_string
 
     def __time_is_legal(self, t_string):
-        format_time_list = self.__default_time[:]
+        format_time_list = self._default_time[:]
         search_list = re.findall("(?:(\\d{4}-\\d{1,2}-\\d{1,2})?(\\d{4}-\\d{1,2})?(\\d{1,2}-\\d{1,2})?([- ]?\\d{1,2}:"
                                  "\\d{1,2})?)?(?:(\\d{4}年\\d{1,2}月\\d{1,2}日)?(\\d{4}年\\d{1,2}月)?(\\d{1,2}月\\d{1,2}"
                                  "日)?(\\d{1,2}[时点]\\d{1,2}分)?(\\d{1,2}[时点])?)?", t_string)[0]
@@ -195,4 +198,5 @@ class TimeParser:
         # minute
         if format_time_list[4] < 0 or format_time_list[4] >= 60:
             return False
+        self._time_list.append(format_time_list)
         return True

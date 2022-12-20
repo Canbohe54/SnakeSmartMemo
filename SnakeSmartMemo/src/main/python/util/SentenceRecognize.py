@@ -6,9 +6,10 @@ import json
 import time
 from datetime import datetime
 import sys
-sys.path.append("../../../")
+
 from src.main.python.resources import tk
 
+sys.path.append("../../../")
 
 def get_authorization(params):
     """

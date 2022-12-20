@@ -21,6 +21,7 @@ public class Tools {
      * <p>       token     ->  verification, generate
      * <p>    recognition  ->
      * <p>        time     ->    parser
+     * <p>        event    ->    parser
      * <p>
      * <p>data format: "["(String)", ...]"
      * <p>   --except: time.parser -> "["(String)", "{...}"]"
@@ -46,14 +47,5 @@ public class Tools {
             respText = new String(respData, 0, resp.getLength(), StandardCharsets.UTF_8);
         }
         return respText;
-    }
-
-    public static void main(String[] args) throws Exception {
-        String path = "C:\\Users\\11707\\Desktop\\audioData7.m4a";
-        String requestData = "[\"" + path + "\"]";
-        String recResult = CallPythonTools("recognition", requestData);
-        System.out.println(recResult);
-        String parResult = CallPythonTools("time.parser", "[\"" + recResult + "\",{}]");
-        System.out.println(parResult);
     }
 }

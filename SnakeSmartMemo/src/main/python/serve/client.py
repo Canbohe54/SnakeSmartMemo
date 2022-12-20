@@ -4,7 +4,7 @@ import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostname()
-# s.bind((host, 9738))
+s.bind((host, 50310))
 port = 11451
 s.connect((host, port))
 dataDic = {"api": "time.parser", "data": ["2015年10月3日去上学", {}]}

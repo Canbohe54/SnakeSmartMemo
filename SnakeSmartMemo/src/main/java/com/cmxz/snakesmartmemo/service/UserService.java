@@ -63,7 +63,7 @@ class UserServerImpl implements UserService {
 
     boolean verifyToken(String token) throws Exception{
         String data = "[\""+token+"\"]";
-        return "true".equals(tools.CallPythonTools("token.verification",data));
+        return "True".equals(tools.CallPythonTools("token.verification",data));
     }
     public String echo(String id) {
         return id;

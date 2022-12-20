@@ -1,4 +1,3 @@
-import json
 import logging
 
 
@@ -24,6 +23,7 @@ def control(_api, _data):
            token     ->  verification, generate
         recognition  ->     NONE
             time     ->    parser
+            event    ->    parser
 
     _data: list[str, ...]
        --except: time.parser -> list[str, dict]
@@ -50,9 +50,15 @@ def control(_api, _data):
         if _comm[1] == "parser" and len(_comm) == 2:
             logging.info("time.parser")
             from src.main.python.util.TimeParser import TimeParser
-            TP = TimeParser(_data[0])
+            TP = TimeParser(_data[0], False)
             return TP.parse_time(start_flag=_data[1].pop("start_flag", "<"),
                                  end_flag=_data[1].pop("end_flag", ">"),
                                  start_ignore_flag=_data[1].pop("start_ignore_flag", None),
                                  end_ignore_flag=_data[1].pop("end_ignore_flag", None))
+    elif _comm[0] == "event":
+        if _comm[1] == "parser" and len(_comm) == 2:
+            logging.info("event.parser")
+            from src.main.python.util.EventParser import EventParser
+            EP = EventParser(_data[0])
+            return EP.parse_event()
     raise ApiNotExistError(_api)

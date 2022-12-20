@@ -3,9 +3,11 @@ import socket
 import logging
 from time import strftime
 import sys
-sys.path.append("../../../")
+
 from src.main.python.util.ParseConfig import ConfParser
 from src.main.python.util.ApiController import control
+
+sys.path.append("../../../")
 
 
 def start():
@@ -59,7 +61,7 @@ def start():
         # except ApiNotExistError as e:
         #     logging.warning(e)
         except Exception as e:
-            logging.error("Unknown Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
+            logging.error("Error Occurred. Request from {}, ErrorInfo: {}".format(addr, e))
         finally:
             server_socket.sendto(b"$Error!$", (addr, client_port))
             logging.info("Close connect to {}".format((addr, client_port)))
