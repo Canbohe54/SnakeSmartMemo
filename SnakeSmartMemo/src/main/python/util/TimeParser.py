@@ -6,6 +6,7 @@ from functools import partial
 class TimeParser:
     _string_contains_time = ""
     _time_list = []
+    __now_id = 0
 
     def __init__(self, string_contains_time, default_time=True):
         """
@@ -15,14 +16,14 @@ class TimeParser:
         :param default_time: True  -> use system time; False -> use ZERO
         :type default_time: bool
         """
-        self.__string_contains_time = string_contains_time
+        self._string_contains_time = string_contains_time
         if default_time:
             self._default_time = [int(ti) for ti in time.strftime("%Y-%m-%d-18-00").split('-')]
         else:
             self._default_time = [0, 0, 0, 0, 0]
 
     def set_string(self, new_string_contains_time):
-        self.__string_contains_time = new_string_contains_time
+        self._string_contains_time = new_string_contains_time
 
     def parse_time(self, **kwargs):
         """
@@ -48,6 +49,15 @@ class TimeParser:
         # pattern 2  --> YYYY-MM-DD-hh:mm
         
         '''
+        print(kwargs)
+        autoincrement = kwargs.pop("autoincrement", False)
+        if autoincrement == "True":
+            autoincrement = True
+            self.__now_id = kwargs.pop("start_id", 0)
+        else:
+            autoincrement = False
+        print(autoincrement)
+
         pattern = "((\\d{4}-\\d{1,2}-\\d{1,2})?(\\d{4}-\\d{1,2})?(\\d{1,2}-\\d{1,2})?([- ]?\\d{1,2}:\\d{1," \
                   "2})?)?((\\d{4}年\\d{1,2}月\\d{1,2}日)?(\\d{4}年\\d{1,2}月)?(\\d{1,2}月\\d{1,2}日)?(\\d{1,2}" \
                   "[时点]\\d{1,2}分)?(\\d{1,2}[时点])?)?"
@@ -57,11 +67,12 @@ class TimeParser:
             pattern = pattern + "(?!{})".format(kwargs.pop("end_ignore_flag"))
 
         new_high_lighter = partial(self.__time_high_light, start_flag=kwargs.pop("start_flag", "<"),
-                                   end_flag=kwargs.pop("end_flag", ">"))
-        processed_time_string = re.sub(pattern, new_high_lighter, self.__string_contains_time)
+                                   end_flag=kwargs.pop("end_flag", ">"),
+                                   autoincrement=autoincrement)
+        processed_time_string = re.sub(pattern, new_high_lighter, self._string_contains_time)
         return processed_time_string
 
-    def __time_high_light(self, matched_time_object, start_flag='<', end_flag='>'):
+    def __time_high_light(self, matched_time_object, start_flag='<', end_flag='>', autoincrement=False):
         """
         adding flags to the time string
         :param matched_time_object: a re.Match object ONLY contains time
@@ -70,6 +81,8 @@ class TimeParser:
         :type start_flag: str
         :param end_flag: the flag at the END of the time string
         :type end_flag: str
+        :param autoincrement: is ID needed autoincrement
+        :type autoincrement: bool
         :return: a precessed string contains flags
         """
         matched_time_string = matched_time_object.group()
@@ -84,29 +97,29 @@ class TimeParser:
             head = matched_time_object.span()[0]
             back = matched_time_object.span()[1]
             # 头判断
-            if head == 0 or (not self.__string_contains_time[head - 1].isnumeric()
-                             and self.__string_contains_time[head - 1] != ':'
-                             and self.__string_contains_time[head - 1] != '-'
-                             and self.__string_contains_time[head - 1] != '年'
-                             and self.__string_contains_time[head - 1] != '月'
-                             and self.__string_contains_time[head - 1] != '日'
-                             and self.__string_contains_time[head - 1] != '时'
-                             and self.__string_contains_time[head - 1] != '点'
-                             and self.__string_contains_time[head - 1] != '分'):
+            if head == 0 or (not self._string_contains_time[head - 1].isnumeric()
+                             and self._string_contains_time[head - 1] != ':'
+                             and self._string_contains_time[head - 1] != '-'
+                             and self._string_contains_time[head - 1] != '年'
+                             and self._string_contains_time[head - 1] != '月'
+                             and self._string_contains_time[head - 1] != '日'
+                             and self._string_contains_time[head - 1] != '时'
+                             and self._string_contains_time[head - 1] != '点'
+                             and self._string_contains_time[head - 1] != '分'):
                 is_head_legal = True
             else:
                 is_head_legal = False
 
             # 尾判断
-            if back == len(self.__string_contains_time) or (not self.__string_contains_time[back].isnumeric()
-                                                            and self.__string_contains_time[back] != ':'
-                                                            and self.__string_contains_time[back] != '-'
-                                                            and self.__string_contains_time[back] != '年'
-                                                            and self.__string_contains_time[back] != '月'
-                                                            and self.__string_contains_time[back] != '日'
-                                                            and self.__string_contains_time[back] != '时'
-                                                            and self.__string_contains_time[back] != '点'
-                                                            and self.__string_contains_time[back] != '分'):
+            if back == len(self._string_contains_time) or (not self._string_contains_time[back].isnumeric()
+                                                            and self._string_contains_time[back] != ':'
+                                                            and self._string_contains_time[back] != '-'
+                                                            and self._string_contains_time[back] != '年'
+                                                            and self._string_contains_time[back] != '月'
+                                                            and self._string_contains_time[back] != '日'
+                                                            and self._string_contains_time[back] != '时'
+                                                            and self._string_contains_time[back] != '点'
+                                                            and self._string_contains_time[back] != '分'):
                 is_back_legal = True
             else:
                 is_back_legal = False
@@ -114,6 +127,10 @@ class TimeParser:
         # 时间合法判断
         is_time_legal = self.__time_is_legal(matched_time_string)
         if is_head_legal and is_back_legal and is_time_legal:
+            if autoincrement:
+                start_flag = start_flag.replace("%ID", str(self.__now_id))
+                print(self.__now_id)
+                self.__now_id += 1
             return start_flag + matched_time_string + end_flag
         else:
             return matched_time_string

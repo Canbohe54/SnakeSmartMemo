@@ -284,7 +284,7 @@ class UserServerImpl implements UserService {
 //            fis.close();
             byte[] bytesArray = text.getBytes();
             //调用CallPythonTools处理
-            String data = "[\"" + new String(bytesArray) + "\",{\"start_flag\":\"<a herf='#events'>\",\"end_flag\":\"</a>\"}]";
+            String data = "[\"" + new String(bytesArray) + "\",{\"start_flag\":\"<a herf='#events_%ID'>\",\"end_flag\":\"</a>\",\"autoincrement\":\"True\",\"start_id\":0}]";
             String events = Tools.CallPythonTools(comm, data);
             response.put("statusMsg", "success");
             response.put("events", events);
