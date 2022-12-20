@@ -49,14 +49,12 @@ class TimeParser:
         # pattern 2  --> YYYY-MM-DD-hh:mm
         
         '''
-        print(kwargs)
         autoincrement = kwargs.pop("autoincrement", False)
         if autoincrement == "True":
             autoincrement = True
             self.__now_id = kwargs.pop("start_id", 0)
         else:
             autoincrement = False
-        print(autoincrement)
 
         pattern = "((\\d{4}-\\d{1,2}-\\d{1,2})?(\\d{4}-\\d{1,2})?(\\d{1,2}-\\d{1,2})?([- ]?\\d{1,2}:\\d{1," \
                   "2})?)?((\\d{4}年\\d{1,2}月\\d{1,2}日)?(\\d{4}年\\d{1,2}月)?(\\d{1,2}月\\d{1,2}日)?(\\d{1,2}" \
@@ -129,7 +127,6 @@ class TimeParser:
         if is_head_legal and is_back_legal and is_time_legal:
             if autoincrement:
                 start_flag = start_flag.replace("%ID", str(self.__now_id))
-                print(self.__now_id)
                 self.__now_id += 1
             return start_flag + matched_time_string + end_flag
         else:
