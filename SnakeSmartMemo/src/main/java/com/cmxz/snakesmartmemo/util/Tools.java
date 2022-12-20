@@ -51,5 +51,6 @@ public class Tools {
 
     public static void main(String[] args) throws Exception {
         System.out.println(CallPythonTools("time.parser", "[\"2022-12-24考大物期末，2022-12-25-9:00考Java期末，2022年12月26日14点30分考英语。\",{\"start_flag\":\"<a herf='#events_%ID'>\",\"end_flag\":\"</a>\",\"autoincrement\":\"True\",\"start_id\":0}]"));
+        System.out.println(CallPythonTools("event.parser", "[\"11月11日18时吃饭，12-24考大物期末，12-25-9:00考Java期末，2022年12月26日14点30分考英语。\"]"));
     }
 }
