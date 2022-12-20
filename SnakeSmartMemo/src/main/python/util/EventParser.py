@@ -18,4 +18,4 @@ class EventParser(TimeParser):
         request_result = []
         for i in range(len(parse_res)):
             request_result.append({"time": self._time_list[i], "event": parse_res[i]})
-        return json.dumps({"events": request_result}, ensure_ascii=False)
+        return json.dumps(request_result, ensure_ascii=False)
